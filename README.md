@@ -1,0 +1,159 @@
+# 📰 Snews - News Search Web App
+
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Status](https://img.shields.io/badge/status-active-success.svg)
+
+**Snews**는 영어와 한국어 뉴스를 검색할 수 있는 독립 실행형 웹 애플리케이션입니다.
+
+## ✨ 주요 기능
+
+- 🌍 **영어 뉴스 2개** + **한국어 뉴스 2개** 동시 검색
+- ⏰ **최근 2일 이내** 뉴스만 필터링
+- 🚀 **단일 HTML 파일**로 브라우저에서 독립 실행
+- 📱 **반응형 디자인** - 모바일/태블릿/데스크톱 지원
+- 💾 **API 키 자동 저장** - localStorage 사용
+- 🎨 **모던한 그라데이션 UI**
+- 🔍 **실시간 뉴스 검색**
+
+## 🚀 빠른 시작
+
+### 1. 파일 다운로드
+```bash
+# 리포지토리 클론
+git clone <repository-url>
+cd Test
+```
+
+### 2. API 키 발급
+1. [NewsAPI.org](https://newsapi.org/register)에 접속
+2. 무료 계정 생성 (이메일 인증 필요)
+3. API 키 복사 (무료 플랜: 하루 100회 요청)
+
+### 3. 실행
+1. `Snews.html` 파일을 브라우저에서 엽니다
+2. API 키를 입력란에 붙여넣습니다 (자동으로 저장됩니다)
+3. 검색 키워드를 입력하고 검색 버튼을 클릭합니다
+4. 영어와 한국어 뉴스가 각각 2개씩 표시됩니다
+
+## 📸 스크린샷
+
+### 검색 화면
+- 키워드 입력 후 영어/한국어 뉴스를 동시에 검색
+- 카드 형태로 뉴스 표시
+- 이미지, 제목, 설명, 출처, 날짜 정보 포함
+
+### 뉴스 카드
+- 마우스 오버 시 애니메이션 효과
+- "Read More" 버튼으로 원문 링크 제공
+- 반응형 그리드 레이아웃
+
+## 🛠️ 기술 스택
+
+- **HTML5** - 웹 구조
+- **CSS3** - 스타일링 및 애니메이션
+- **Vanilla JavaScript** - 동적 기능 구현
+- **NewsAPI** - 뉴스 데이터 제공
+- **localStorage** - API 키 저장
+
+## 📋 시스템 요구사항
+
+- 모던 웹 브라우저 (Chrome, Firefox, Safari, Edge)
+- 인터넷 연결
+- NewsAPI 키 (무료 또는 유료)
+
+## 🔧 사용 방법
+
+### 검색 키워드 예시
+- `technology` - 기술 관련 뉴스
+- `sports` - 스포츠 뉴스
+- `politics` - 정치 뉴스
+- `entertainment` - 엔터테인먼트 뉴스
+- `business` - 비즈니스 뉴스
+- `AI` - 인공지능 관련 뉴스
+- `삼성` - 한국어 키워드도 검색 가능
+
+### API 키 관리
+- 입력한 API 키는 브라우저의 localStorage에 저장됩니다
+- 다음 방문 시 자동으로 불러옵니다
+- 브라우저 개발자 도구에서 삭제 가능:
+  ```javascript
+  localStorage.removeItem('newsApiKey');
+  ```
+
+## 📦 파일 구조
+
+```
+Test/
+├── Snews.html          # 메인 웹 애플리케이션
+└── README.md           # 프로젝트 문서
+```
+
+## ⚙️ 설정 옵션
+
+Snews.html 파일 내에서 다음 설정을 변경할 수 있습니다:
+
+```javascript
+// 검색할 뉴스 개수 변경 (현재: 2개)
+pageSize=2  // 1~100까지 설정 가능
+
+// 날짜 범위 변경 (현재: 2일)
+twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);  // 숫자 변경
+
+// 정렬 방식 변경 (현재: 최신순)
+sortBy=publishedAt  // relevancy, popularity 등으로 변경 가능
+```
+
+## 🔒 보안 및 개인정보
+
+- API 키는 사용자의 브라우저 localStorage에만 저장됩니다
+- 서버로 전송되지 않으며, 사용자 기기에서만 관리됩니다
+- HTTPS를 통해 NewsAPI와 안전하게 통신합니다
+
+## 🐛 문제 해결
+
+### API 오류 발생 시
+- API 키가 올바른지 확인
+- NewsAPI.org에서 키가 활성화되었는지 확인
+- 하루 요청 한도를 초과하지 않았는지 확인 (무료: 100회)
+
+### 뉴스가 표시되지 않을 때
+- 인터넷 연결 확인
+- 검색 키워드를 변경해보기
+- 브라우저 콘솔(F12)에서 오류 메시지 확인
+
+### 이미지가 표시되지 않을 때
+- 일부 뉴스는 이미지가 없을 수 있습니다
+- 자동으로 "No Image" 플레이스홀더가 표시됩니다
+
+## 📝 버전 히스토리
+
+### Version 1.0.0 (2025-11-10)
+- 초기 릴리즈
+- 영어/한국어 뉴스 검색 기능
+- 2일 이내 뉴스 필터링
+- 각 언어당 2개 뉴스 표시
+- 반응형 UI 디자인
+- API 키 localStorage 저장
+- 그라데이션 테마 적용
+
+## 🤝 기여
+
+버그 리포트, 기능 제안, 풀 리퀘스트를 환영합니다!
+
+## 📄 라이선스
+
+MIT License - 자유롭게 사용, 수정, 배포할 수 있습니다.
+
+## 📞 문의
+
+질문이나 제안사항이 있으시면 이슈를 등록해주세요.
+
+## 🙏 감사의 말
+
+- [NewsAPI.org](https://newsapi.org/) - 뉴스 데이터 제공
+- 모든 기여자 및 사용자분들께 감사드립니다
+
+---
+
+**Made with ❤️ for news enthusiasts**

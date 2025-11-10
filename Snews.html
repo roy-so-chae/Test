@@ -35,6 +35,29 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
+        .version {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px 20px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
         .search-section {
             background: white;
             padding: 25px;
@@ -231,6 +254,7 @@
         <header>
             <h1>📰 Snews - News Search</h1>
             <p>Search latest news in English and Korean (Last 2 days)</p>
+            <span class="version">v1.0.0</span>
         </header>
 
         <div class="search-section">
@@ -267,9 +291,19 @@
             <h2>🇰🇷 Korean News (2 articles)</h2>
             <div id="koreanGrid" class="news-grid"></div>
         </div>
+
+        <footer>
+            <p><strong>Snews v1.0.0</strong> | Made with ❤️ for news enthusiasts</p>
+            <p>Powered by <a href="https://newsapi.org" target="_blank">NewsAPI.org</a></p>
+        </footer>
     </div>
 
     <script>
+        // Application version
+        const APP_VERSION = '1.0.0';
+        console.log(`%cSnews v${APP_VERSION}`, 'color: #667eea; font-size: 20px; font-weight: bold;');
+        console.log('News Search Web Application');
+
         // Save API key to localStorage
         const apiKeyInput = document.getElementById('apiKey');
         const savedApiKey = localStorage.getItem('newsApiKey');
