@@ -1,6 +1,6 @@
 # 📰 Snews - News Search Web App
 
-![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 
@@ -8,6 +8,7 @@
 
 ## ✨ 주요 기능
 
+- 🌐 **CORS 프록시 지원** - HTML 파일을 직접 열어도 작동! (file:// 프로토콜 지원)
 - 🎉 **100% 무료 플랜 작동 보장** - top-headlines API 사용으로 완벽 호환!
 - ✅ **"paid plan required" 에러 완전 해결** - 더 이상 유료 플랜 불필요!
 - 🎬 **데모 모드** - API 키 없이도 샘플 뉴스로 즉시 체험 가능!
@@ -124,6 +125,12 @@ sortBy=publishedAt  // relevancy, popularity 등으로 변경 가능
 
 ## 🐛 문제 해결
 
+### CORS 에러 (blocked by CORS policy) ✅ 해결됨!
+- **v1.3.1에서 완전히 해결되었습니다!**
+- HTML 파일을 직접 열어도 (file://) 작동합니다
+- CORS 프록시(allorigins.win)를 통해 API 호출
+- 더 이상 웹 서버 없이도 바로 실행 가능!
+
 ### "paid plan required" 또는 "upgrade required" 에러 ✅ 해결됨!
 - **v1.3.0에서 완전히 해결되었습니다!**
 - `/v2/everything` API는 무료 플랜에서 제한됩니다
@@ -162,7 +169,15 @@ sortBy=publishedAt  // relevancy, popularity 등으로 변경 가능
 
 ## 📝 버전 히스토리
 
-### Version 1.3.0 (2025-11-10) 🆕 **무료 플랜 완전 지원**
+### Version 1.3.1 (2025-11-10) 🆕 **CORS 문제 해결**
+- **CORS 프록시 추가** - allorigins.win을 통한 API 호출
+- **로컬 파일 지원** - HTML 파일을 직접 더블클릭으로 열어도 작동
+- **file:// 프로토콜 지원** - 웹서버 없이 브라우저에서 바로 실행
+- **CORS 에러 완전 해결** - "blocked by CORS policy" 에러 해결
+- **간편한 사용** - 다운로드 후 바로 실행 가능
+- **프록시 로깅** - 콘솔에 CORS 프록시 사용 메시지 표시
+
+### Version 1.3.0 (2025-11-10) **무료 플랜 완전 지원**
 - **top-headlines API 전환** - `/v2/everything` → `/v2/top-headlines`
 - **"paid plan required" 에러 완전 해결** - 무료 API 키로 100% 작동
 - **country 파라미터 사용** - us (미국), kr (한국) 헤드라인 검색

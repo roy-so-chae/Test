@@ -279,7 +279,7 @@
         <header>
             <h1>📰 Snews - News Search</h1>
             <p>Search latest news in English and Korean (Last 2 days)</p>
-            <span class="version">v1.3.0</span>
+            <span class="version">v1.3.1</span>
         </header>
 
         <div class="search-section">
@@ -322,17 +322,18 @@
         </div>
 
         <footer>
-            <p><strong>Snews v1.3.0</strong> | Made with ❤️ for news enthusiasts</p>
+            <p><strong>Snews v1.3.1</strong> | Made with ❤️ for news enthusiasts</p>
             <p>Powered by <a href="https://newsapi.org" target="_blank">NewsAPI.org</a></p>
         </footer>
     </div>
 
     <script>
         // Application version
-        const APP_VERSION = '1.3.0';
+        const APP_VERSION = '1.3.1';
         console.log(`%cSnews v${APP_VERSION}`, 'color: #667eea; font-size: 20px; font-weight: bold;');
         console.log('News Search Web Application - 100% Free Plan Compatible!');
         console.log('Using top-headlines API - Works with ALL free NewsAPI keys!');
+        console.log('CORS-enabled for local file access!');
 
         // Sample demo data
         const demoData = {
@@ -509,12 +510,17 @@
 
             try {
                 // Use top-headlines API which is fully supported in free plan
+                // Use CORS proxy to avoid CORS errors when opening HTML file directly
+                const corsProxy = 'https://api.allorigins.win/raw?url=';
+
                 // Fetch US news (English)
                 const usUrl = `https://newsapi.org/v2/top-headlines?country=us&q=${encodeURIComponent(query)}&pageSize=10&apiKey=${apiKey}`;
+                const usProxyUrl = corsProxy + encodeURIComponent(usUrl);
                 console.log('Fetching US news...');
                 console.log('URL:', usUrl.replace(apiKey, 'API_KEY_HIDDEN'));
+                console.log('Using CORS proxy for local file access');
 
-                const usResponse = await fetch(usUrl);
+                const usResponse = await fetch(usProxyUrl);
                 console.log('US Response status:', usResponse.status, usResponse.statusText);
 
                 if (!usResponse.ok) {
@@ -538,10 +544,11 @@
 
                 // Fetch KR news (Korean)
                 const krUrl = `https://newsapi.org/v2/top-headlines?country=kr&q=${encodeURIComponent(query)}&pageSize=10&apiKey=${apiKey}`;
+                const krProxyUrl = corsProxy + encodeURIComponent(krUrl);
                 console.log('Fetching KR news...');
                 console.log('URL:', krUrl.replace(apiKey, 'API_KEY_HIDDEN'));
 
-                const krResponse = await fetch(krUrl);
+                const krResponse = await fetch(krProxyUrl);
                 console.log('KR Response status:', krResponse.status, krResponse.statusText);
 
                 if (!krResponse.ok) {
