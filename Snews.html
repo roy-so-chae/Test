@@ -238,6 +238,31 @@
             font-weight: 600;
         }
 
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .demo-btn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .demo-btn:hover {
+            background: linear-gradient(135deg, #0e8273 0%, #2dd46b 100%);
+        }
+
+        .demo-badge {
+            display: inline-block;
+            background: #38ef7d;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2em;
@@ -254,19 +279,20 @@
         <header>
             <h1>📰 Snews - News Search</h1>
             <p>Search latest news in English and Korean (Last 2 days)</p>
-            <span class="version">v1.0.0</span>
+            <span class="version">v1.1.0</span>
         </header>
 
         <div class="search-section">
             <div class="api-info">
-                <strong>⚠️ API Key Required:</strong> Get your free API key from
+                <strong>💡 Quick Start:</strong> Try Demo Mode for instant results without API key!
+                Or get your free API key from
                 <a href="https://newsapi.org/register" target="_blank">NewsAPI.org</a>
                 (Free tier: 100 requests/day)
             </div>
 
             <div class="input-group">
-                <label for="apiKey">NewsAPI Key:</label>
-                <input type="password" id="apiKey" placeholder="Enter your NewsAPI key" />
+                <label for="apiKey">NewsAPI Key (Optional for Demo):</label>
+                <input type="password" id="apiKey" placeholder="Enter your NewsAPI key or use Demo Mode" />
             </div>
 
             <div class="input-group">
@@ -274,7 +300,10 @@
                 <input type="text" id="searchQuery" placeholder="e.g., technology, sports, politics" value="technology" />
             </div>
 
-            <button id="searchBtn" onclick="searchNews()">🔍 Search News</button>
+            <div class="button-group">
+                <button id="searchBtn" onclick="searchNews()">🔍 Search News</button>
+                <button id="demoBtn" class="demo-btn" onclick="loadDemoNews()">🎬 Demo Mode</button>
+            </div>
         </div>
 
         <div id="message"></div>
@@ -283,26 +312,66 @@
         </div>
 
         <div id="englishNews" class="news-section" style="display: none;">
-            <h2>🇺🇸 English News (2 articles)</h2>
+            <h2>🇺🇸 English News (2 articles)<span id="demoBadgeEn" class="demo-badge" style="display: none;">DEMO</span></h2>
             <div id="englishGrid" class="news-grid"></div>
         </div>
 
         <div id="koreanNews" class="news-section" style="display: none;">
-            <h2>🇰🇷 Korean News (2 articles)</h2>
+            <h2>🇰🇷 Korean News (2 articles)<span id="demoBadgeKo" class="demo-badge" style="display: none;">DEMO</span></h2>
             <div id="koreanGrid" class="news-grid"></div>
         </div>
 
         <footer>
-            <p><strong>Snews v1.0.0</strong> | Made with ❤️ for news enthusiasts</p>
+            <p><strong>Snews v1.1.0</strong> | Made with ❤️ for news enthusiasts</p>
             <p>Powered by <a href="https://newsapi.org" target="_blank">NewsAPI.org</a></p>
         </footer>
     </div>
 
     <script>
         // Application version
-        const APP_VERSION = '1.0.0';
+        const APP_VERSION = '1.1.0';
         console.log(`%cSnews v${APP_VERSION}`, 'color: #667eea; font-size: 20px; font-weight: bold;');
-        console.log('News Search Web Application');
+        console.log('News Search Web Application - Now with Demo Mode!');
+
+        // Sample demo data
+        const demoData = {
+            english: [
+                {
+                    title: "Artificial Intelligence Breakthrough: New Model Achieves Human-Level Performance",
+                    description: "Researchers have developed a new AI system that demonstrates remarkable capabilities in understanding and generating human language, marking a significant milestone in the field of artificial intelligence.",
+                    url: "https://example.com/ai-breakthrough",
+                    urlToImage: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop",
+                    publishedAt: new Date(Date.now() - 3600000).toISOString(),
+                    source: { name: "Tech News Daily" }
+                },
+                {
+                    title: "Global Climate Summit: Leaders Commit to Net Zero Emissions by 2050",
+                    description: "World leaders have gathered at the international climate summit to announce ambitious new targets for reducing carbon emissions and combating climate change.",
+                    url: "https://example.com/climate-summit",
+                    urlToImage: "https://images.unsplash.com/photo-1569163139394-de4798aa62b6?w=800&h=400&fit=crop",
+                    publishedAt: new Date(Date.now() - 7200000).toISOString(),
+                    source: { name: "Global News Network" }
+                }
+            ],
+            korean: [
+                {
+                    title: "한국 IT 기업, 차세대 반도체 기술 개발 성공",
+                    description: "국내 주요 IT 기업이 차세대 반도체 기술 개발에 성공하여 글로벌 시장에서의 경쟁력을 한층 강화할 것으로 전망됩니다.",
+                    url: "https://example.com/korea-semiconductor",
+                    urlToImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop",
+                    publishedAt: new Date(Date.now() - 5400000).toISOString(),
+                    source: { name: "한국경제신문" }
+                },
+                {
+                    title: "K-팝 그룹, 빌보드 차트 1위 등극",
+                    description: "국내 인기 K-팝 그룹이 최신 앨범으로 빌보드 메인 차트에서 1위를 차지하며 한국 음악의 위상을 다시 한번 증명했습니다.",
+                    url: "https://example.com/kpop-billboard",
+                    urlToImage: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=400&fit=crop",
+                    publishedAt: new Date(Date.now() - 10800000).toISOString(),
+                    source: { name: "연예뉴스" }
+                }
+            ]
+        };
 
         // Save API key to localStorage
         const apiKeyInput = document.getElementById('apiKey');
@@ -348,12 +417,52 @@
             `;
         }
 
+        // Demo mode function
+        function loadDemoNews() {
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('englishNews').style.display = 'none';
+            document.getElementById('koreanNews').style.display = 'none';
+            document.getElementById('demoBtn').disabled = true;
+
+            // Simulate loading delay
+            setTimeout(() => {
+                // Show demo badges
+                document.getElementById('demoBadgeEn').style.display = 'inline-block';
+                document.getElementById('demoBadgeKo').style.display = 'inline-block';
+
+                // Display English demo news
+                const englishGrid = document.getElementById('englishGrid');
+                englishGrid.innerHTML = demoData.english
+                    .map(article => createNewsCard(article))
+                    .join('');
+                document.getElementById('englishNews').style.display = 'block';
+
+                // Display Korean demo news
+                const koreanGrid = document.getElementById('koreanGrid');
+                koreanGrid.innerHTML = demoData.korean
+                    .map(article => createNewsCard(article))
+                    .join('');
+                document.getElementById('koreanNews').style.display = 'block';
+
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('demoBtn').disabled = false;
+
+                showMessage('Demo mode: Showing sample news. Get an API key for real-time news!', 'info');
+            }, 500);
+        }
+
         async function searchNews() {
             const apiKey = document.getElementById('apiKey').value.trim();
             const query = document.getElementById('searchQuery').value.trim();
 
+            // Auto-switch to demo mode if no API key
             if (!apiKey) {
-                showMessage('Please enter your NewsAPI key!', 'error');
+                showMessage('No API key provided. Switching to Demo Mode...', 'info');
+                setTimeout(() => {
+                    loadDemoNews();
+                }, 1000);
                 return;
             }
 
@@ -361,6 +470,10 @@
                 showMessage('Please enter a search keyword!', 'error');
                 return;
             }
+
+            // Hide demo badges for real search
+            document.getElementById('demoBadgeEn').style.display = 'none';
+            document.getElementById('demoBadgeKo').style.display = 'none';
 
             // Show loading
             document.getElementById('loading').style.display = 'block';
@@ -380,10 +493,22 @@
                 );
 
                 if (!englishResponse.ok) {
-                    throw new Error(`API Error: ${englishResponse.status} - ${englishResponse.statusText}`);
+                    const errorData = await englishResponse.json();
+                    if (englishResponse.status === 401) {
+                        throw new Error('Invalid API key. Please check your key or try Demo Mode.');
+                    } else if (englishResponse.status === 429) {
+                        throw new Error('API rate limit exceeded. Please try again later or use Demo Mode.');
+                    } else {
+                        throw new Error(errorData.message || `API Error: ${englishResponse.status}`);
+                    }
                 }
 
                 const englishData = await englishResponse.json();
+
+                // Check for API error in response
+                if (englishData.status === 'error') {
+                    throw new Error(englishData.message || 'API returned an error');
+                }
 
                 // Search Korean news
                 const koreanResponse = await fetch(
@@ -391,10 +516,22 @@
                 );
 
                 if (!koreanResponse.ok) {
-                    throw new Error(`API Error: ${koreanResponse.status} - ${koreanResponse.statusText}`);
+                    const errorData = await koreanResponse.json();
+                    if (koreanResponse.status === 401) {
+                        throw new Error('Invalid API key. Please check your key or try Demo Mode.');
+                    } else if (koreanResponse.status === 429) {
+                        throw new Error('API rate limit exceeded. Please try again later or use Demo Mode.');
+                    } else {
+                        throw new Error(errorData.message || `API Error: ${koreanResponse.status}`);
+                    }
                 }
 
                 const koreanData = await koreanResponse.json();
+
+                // Check for API error in response
+                if (koreanData.status === 'error') {
+                    throw new Error(koreanData.message || 'API returned an error');
+                }
 
                 // Display English news
                 const englishGrid = document.getElementById('englishGrid');
@@ -426,12 +563,23 @@
 
             } catch (error) {
                 console.error('Error fetching news:', error);
-                showMessage(`Error: ${error.message}. Please check your API key and try again.`, 'error');
+                showMessage(`❌ ${error.message}`, 'error');
             } finally {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('searchBtn').disabled = false;
             }
         }
+
+        // Auto-load demo on page load if no API key
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedApiKey = localStorage.getItem('newsApiKey');
+            if (!savedApiKey || savedApiKey.trim() === '') {
+                console.log('No API key found. Auto-loading demo mode...');
+                setTimeout(() => {
+                    loadDemoNews();
+                }, 800);
+            }
+        });
 
         // Allow Enter key to trigger search
         document.getElementById('searchQuery').addEventListener('keypress', function(e) {
