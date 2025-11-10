@@ -279,7 +279,7 @@
         <header>
             <h1>📰 Snews - News Search</h1>
             <p>Search latest news in English and Korean (Last 2 days)</p>
-            <span class="version">v1.2.0</span>
+            <span class="version">v1.2.1</span>
         </header>
 
         <div class="search-section">
@@ -322,16 +322,17 @@
         </div>
 
         <footer>
-            <p><strong>Snews v1.2.0</strong> | Made with ❤️ for news enthusiasts</p>
+            <p><strong>Snews v1.2.1</strong> | Made with ❤️ for news enthusiasts</p>
             <p>Powered by <a href="https://newsapi.org" target="_blank">NewsAPI.org</a></p>
         </footer>
     </div>
 
     <script>
         // Application version
-        const APP_VERSION = '1.2.0';
+        const APP_VERSION = '1.2.1';
         console.log(`%cSnews v${APP_VERSION}`, 'color: #667eea; font-size: 20px; font-weight: bold;');
-        console.log('News Search Web Application - Free Plan Compatible!');
+        console.log('News Search Web Application - Real News Search Enabled!');
+        console.log('Enter your NewsAPI key to search real news, or click Demo Mode for samples.');
 
         // Sample demo data
         const demoData = {
@@ -481,19 +482,19 @@
             const apiKey = document.getElementById('apiKey').value.trim();
             const query = document.getElementById('searchQuery').value.trim();
 
-            // Auto-switch to demo mode if no API key
+            // Check if API key is provided
             if (!apiKey) {
-                showMessage('No API key provided. Switching to Demo Mode...', 'info');
-                setTimeout(() => {
-                    loadDemoNews();
-                }, 1000);
+                showMessage('⚠️ Please enter your NewsAPI key to search real news, or click Demo Mode button.', 'error');
                 return;
             }
 
             if (!query) {
-                showMessage('Please enter a search keyword!', 'error');
+                showMessage('⚠️ Please enter a search keyword!', 'error');
                 return;
             }
+
+            console.log('Searching for:', query);
+            console.log('API Key provided:', apiKey.substring(0, 8) + '...');
 
             // Hide demo badges for real search
             document.getElementById('demoBadgeEn').style.display = 'none';
@@ -513,94 +514,113 @@
             try {
                 // Fetch more news to ensure we get both English and Korean articles
                 // Free plan doesn't support 'language' parameter, so we fetch more and filter client-side
-                const response = await fetch(
-                    `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&from=${fromDate}&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`
-                );
+                const apiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&from=${fromDate}&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`;
+                console.log('Fetching from NewsAPI...');
+                console.log('Query:', query, '| Date from:', fromDate);
+
+                const response = await fetch(apiUrl);
+                console.log('Response status:', response.status, response.statusText);
 
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
+                    console.error('API Error Response:', errorData);
+
                     if (response.status === 401) {
-                        throw new Error('Invalid API key. Please check your key or try Demo Mode.');
+                        throw new Error('❌ Invalid API key. Please check your key and try again.');
                     } else if (response.status === 426) {
-                        throw new Error('Upgrade required - Using free plan features. Try Demo Mode for instant results.');
+                        throw new Error('⚠️ This API endpoint requires paid plan. Try Demo Mode instead.');
                     } else if (response.status === 429) {
-                        throw new Error('API rate limit exceeded. Please try again later or use Demo Mode.');
+                        throw new Error('⚠️ API rate limit exceeded (100 requests/day). Try again tomorrow or use Demo Mode.');
                     } else {
-                        throw new Error(errorData.message || `API Error: ${response.status}. Try Demo Mode.`);
+                        throw new Error(errorData.message || `API Error ${response.status}: ${response.statusText}`);
                     }
                 }
 
                 const data = await response.json();
+                console.log('API Response:', data);
+                console.log('Total articles received:', data.totalResults);
+                console.log('Articles in response:', data.articles ? data.articles.length : 0);
 
                 // Check for API error in response
                 if (data.status === 'error') {
-                    throw new Error(data.message || 'API returned an error. Try Demo Mode.');
+                    console.error('API returned error status:', data);
+                    throw new Error(data.message || 'API returned an error. Please try again.');
                 }
 
                 if (!data.articles || data.articles.length === 0) {
-                    throw new Error('No news found for this query. Try Demo Mode or different keywords.');
+                    console.warn('No articles found for query:', query);
+                    throw new Error(`No news found for "${query}". Try different keywords or Demo Mode.`);
                 }
 
                 // Separate articles by language
                 const { english, korean } = separateByLanguage(data.articles);
+                console.log('Language separation - English:', english.length, '| Korean:', korean.length);
 
                 // Display English news
                 const englishGrid = document.getElementById('englishGrid');
                 if (english.length > 0) {
-                    englishGrid.innerHTML = english
-                        .slice(0, 2)
+                    const englishArticles = english.slice(0, 2);
+                    console.log('Displaying English articles:', englishArticles);
+                    englishGrid.innerHTML = englishArticles
                         .map(article => createNewsCard(article))
                         .join('');
                     document.getElementById('englishNews').style.display = 'block';
                 } else {
-                    englishGrid.innerHTML = '<p style="color: white;">No English news found. Try Demo Mode or different keywords.</p>';
+                    console.warn('No English articles found');
+                    englishGrid.innerHTML = '<p style="color: white;">No English news found. Try different keywords or search in English.</p>';
                     document.getElementById('englishNews').style.display = 'block';
                 }
 
                 // Display Korean news
                 const koreanGrid = document.getElementById('koreanGrid');
                 if (korean.length > 0) {
-                    koreanGrid.innerHTML = korean
-                        .slice(0, 2)
+                    const koreanArticles = korean.slice(0, 2);
+                    console.log('Displaying Korean articles:', koreanArticles);
+                    koreanGrid.innerHTML = koreanArticles
                         .map(article => createNewsCard(article))
                         .join('');
                     document.getElementById('koreanNews').style.display = 'block';
                 } else {
-                    koreanGrid.innerHTML = '<p style="color: white;">No Korean news found. Try Demo Mode or search with Korean keywords.</p>';
+                    console.warn('No Korean articles found');
+                    koreanGrid.innerHTML = '<p style="color: white;">No Korean news found. Try Korean keywords (예: 삼성, 서울) or use Demo Mode.</p>';
                     document.getElementById('koreanNews').style.display = 'block';
                 }
 
                 const englishCount = Math.min(english.length, 2);
                 const koreanCount = Math.min(korean.length, 2);
-                showMessage(`✅ Found ${englishCount} English and ${koreanCount} Korean articles (from ${data.articles.length} total)`, 'info');
+                showMessage(`✅ Real News Loaded! ${englishCount} English + ${koreanCount} Korean articles (from ${data.articles.length} total)`, 'info');
+                console.log('Search completed successfully!');
 
             } catch (error) {
-                console.error('Error fetching news:', error);
+                console.error('Search Error:', error);
                 const errorMsg = error.message || 'Unknown error occurred';
-                showMessage(`❌ ${errorMsg}`, 'error');
+                showMessage(`${errorMsg}`, 'error');
 
-                // Auto-suggest demo mode after 3 seconds
-                if (errorMsg.includes('developer plan') || errorMsg.includes('426') || errorMsg.includes('401')) {
-                    setTimeout(() => {
-                        if (confirm('Would you like to try Demo Mode instead?')) {
-                            loadDemoNews();
-                        }
-                    }, 3000);
-                }
+                // Show helpful message
+                console.log('💡 Tip: If API search fails, you can always try Demo Mode button for sample news.');
             } finally {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('searchBtn').disabled = false;
             }
         }
 
-        // Auto-load demo on page load if no API key
+        // Show welcome message on page load
         window.addEventListener('DOMContentLoaded', function() {
             const savedApiKey = localStorage.getItem('newsApiKey');
             if (!savedApiKey || savedApiKey.trim() === '') {
-                console.log('No API key found. Auto-loading demo mode...');
+                console.log('👋 Welcome to Snews!');
+                console.log('📌 To get started:');
+                console.log('   1. Enter your NewsAPI key and click "Search News" for real news');
+                console.log('   2. Or click "Demo Mode" to see sample news without API key');
+                console.log('   Get free API key at: https://newsapi.org/register');
+
+                // Show friendly welcome message
                 setTimeout(() => {
-                    loadDemoNews();
-                }, 800);
+                    showMessage('👋 Welcome! Enter your API key to search real news, or try Demo Mode for samples.', 'info');
+                }, 500);
+            } else {
+                console.log('✅ API key found. Ready to search real news!');
+                showMessage('✅ API key loaded. Enter keywords and click Search News!', 'info');
             }
         });
 

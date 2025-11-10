@@ -1,6 +1,6 @@
 # 📰 Snews - News Search Web App
 
-![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 
@@ -156,7 +156,17 @@ sortBy=publishedAt  // relevancy, popularity 등으로 변경 가능
 
 ## 📝 버전 히스토리
 
-### Version 1.2.0 (2025-11-10) 🆕 **무료 플랜 완벽 호환**
+### Version 1.2.1 (2025-11-10) 🆕 **실제 검색 우선 모드**
+- **실제 뉴스 검색 우선** - 데모 모드 자동 실행 제거, 사용자가 직접 선택
+- **향상된 디버깅** - 콘솔에 상세한 검색 로그와 API 응답 정보 표시
+- **명확한 에러 메시지** - 각 에러 상황별 구체적인 원인과 해결책 제시
+- **API 키 필수 알림** - API 키 없이 검색 시 명확한 안내 메시지
+- **환영 메시지 개선** - 페이지 로드 시 사용 방법 안내
+- **검색 결과 로깅** - 언어별 분리 결과와 표시 정보 콘솔 출력
+- **URL 링크 정상 작동** - 실제 뉴스 링크 클릭 가능
+- **사용자 경험 개선** - 강제 데모 모드 제거, 선택권 부여
+
+### Version 1.2.0 (2025-11-10) **무료 플랜 완벽 호환**
 - **무료 플랜 지원** - NewsAPI 무료 개발자 플랜 제한사항 완벽 해결
 - **language 파라미터 제거** - 무료 플랜에서 지원하지 않는 파라미터 제거
 - **스마트 언어 감지** - 클라이언트 측에서 한글/영문 자동 구분 (정규표현식 사용)
