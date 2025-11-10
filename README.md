@@ -1,6 +1,6 @@
 # 📰 Snews - News Search Web App
 
-![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)
+![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 
@@ -8,12 +8,12 @@
 
 ## ✨ 주요 기능
 
-- ✅ **무료 플랜 완벽 지원** - NewsAPI 무료 개발자 플랜과 100% 호환!
+- 🎉 **100% 무료 플랜 작동 보장** - top-headlines API 사용으로 완벽 호환!
+- ✅ **"paid plan required" 에러 완전 해결** - 더 이상 유료 플랜 불필요!
 - 🎬 **데모 모드** - API 키 없이도 샘플 뉴스로 즉시 체험 가능!
-- 🤖 **자동 모드 전환** - API 키가 없으면 자동으로 데모 모드 실행
 - 🌍 **영어 뉴스 2개** + **한국어 뉴스 2개** 동시 검색
-- 🧠 **스마트 언어 감지** - 클라이언트 측에서 한글/영문 자동 구분
-- ⏰ **최근 2일 이내** 뉴스만 필터링
+- 🇺🇸 **US 헤드라인** - 미국 주요 뉴스 검색 (country=us)
+- 🇰🇷 **KR 헤드라인** - 한국 주요 뉴스 검색 (country=kr)
 - 🚀 **단일 HTML 파일**로 브라우저에서 독립 실행
 - 📱 **반응형 디자인** - 모바일/태블릿/데스크톱 지원
 - 💾 **API 키 자동 저장** - localStorage 사용
@@ -124,10 +124,16 @@ sortBy=publishedAt  // relevancy, popularity 등으로 변경 가능
 
 ## 🐛 문제 해결
 
+### "paid plan required" 또는 "upgrade required" 에러 ✅ 해결됨!
+- **v1.3.0에서 완전히 해결되었습니다!**
+- `/v2/everything` API는 무료 플랜에서 제한됩니다
+- 대신 `/v2/top-headlines` API를 사용합니다 (무료 플랜 완전 지원)
+- 이제 무료 API 키로 100% 작동합니다!
+
 ### "not allow developer plan" 에러 발생 시 ✅ 해결됨!
-- **v1.2.0에서 완전히 해결되었습니다!**
+- **v1.2.0+에서 완전히 해결되었습니다!**
 - 무료 플랜에서 지원하지 않는 `language` 파라미터를 제거했습니다
-- 대신 클라이언트 측에서 한글/영문을 자동으로 구분합니다
+- `country` 파라미터를 사용하여 국가별 뉴스를 가져옵니다
 - 이제 무료 API 키로도 정상 작동합니다!
 
 ### API 오류 발생 시
@@ -156,7 +162,17 @@ sortBy=publishedAt  // relevancy, popularity 등으로 변경 가능
 
 ## 📝 버전 히스토리
 
-### Version 1.2.1 (2025-11-10) 🆕 **실제 검색 우선 모드**
+### Version 1.3.0 (2025-11-10) 🆕 **무료 플랜 완전 지원**
+- **top-headlines API 전환** - `/v2/everything` → `/v2/top-headlines`
+- **"paid plan required" 에러 완전 해결** - 무료 API 키로 100% 작동
+- **country 파라미터 사용** - us (미국), kr (한국) 헤드라인 검색
+- **2번의 API 호출** - US 뉴스와 KR 뉴스를 각각 가져옴
+- **무료 플랜 전용 최적화** - 더 이상 유료 플랜 불필요
+- **에러 처리 개선** - 426 에러 관련 메시지 업데이트
+- **로깅 강화** - 각 국가별 API 응답 상세 로그
+- **안정성 향상** - KR API 실패 시에도 US 뉴스는 정상 표시
+
+### Version 1.2.1 (2025-11-10) **실제 검색 우선 모드**
 - **실제 뉴스 검색 우선** - 데모 모드 자동 실행 제거, 사용자가 직접 선택
 - **향상된 디버깅** - 콘솔에 상세한 검색 로그와 API 응답 정보 표시
 - **명확한 에러 메시지** - 각 에러 상황별 구체적인 원인과 해결책 제시
