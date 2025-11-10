@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Search - Snews</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .search-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .news-section {
+            margin-bottom: 30px;
+        }
+
+        .news-section h2 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+
+        .news-content {
+            padding: 20px;
+        }
+
+        .news-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .news-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .news-source {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .news-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+
+        .news-link:hover {
+            background: #764ba2;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 40px;
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info {
+            background: #4ecdc4;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .api-info {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            color: #856404;
+        }
+
+        .api-info a {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📰 Snews - News Search</h1>
+            <p>Search latest news in English and Korean (Last 2 days)</p>
+        </header>
+
+        <div class="search-section">
+            <div class="api-info">
+                <strong>⚠️ API Key Required:</strong> Get your free API key from
+                <a href="https://newsapi.org/register" target="_blank">NewsAPI.org</a>
+                (Free tier: 100 requests/day)
+            </div>
+
+            <div class="input-group">
+                <label for="apiKey">NewsAPI Key:</label>
+                <input type="password" id="apiKey" placeholder="Enter your NewsAPI key" />
+            </div>
+
+            <div class="input-group">
+                <label for="searchQuery">Search Keywords:</label>
+                <input type="text" id="searchQuery" placeholder="e.g., technology, sports, politics" value="technology" />
+            </div>
+
+            <button id="searchBtn" onclick="searchNews()">🔍 Search News</button>
+        </div>
+
+        <div id="message"></div>
+        <div id="loading" class="loading" style="display: none;">
+            Loading news...
+        </div>
+
+        <div id="englishNews" class="news-section" style="display: none;">
+            <h2>🇺🇸 English News (2 articles)</h2>
+            <div id="englishGrid" class="news-grid"></div>
+        </div>
+
+        <div id="koreanNews" class="news-section" style="display: none;">
+            <h2>🇰🇷 Korean News (2 articles)</h2>
+            <div id="koreanGrid" class="news-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        // Save API key to localStorage
+        const apiKeyInput = document.getElementById('apiKey');
+        const savedApiKey = localStorage.getItem('newsApiKey');
+        if (savedApiKey) {
+            apiKeyInput.value = savedApiKey;
+        }
+
+        apiKeyInput.addEventListener('change', function() {
+            localStorage.setItem('newsApiKey', this.value);
+        });
+
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        function createNewsCard(article) {
+            const publishedDate = new Date(article.publishedAt);
+            const imageUrl = article.urlToImage || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="200"%3E%3Crect fill="%23f0f0f0" width="400" height="200"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="18"%3ENo Image%3C/text%3E%3C/svg%3E';
+
+            return `
+                <div class="news-card">
+                    <img src="${imageUrl}" alt="${article.title}" class="news-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'200\\'%3E%3Crect fill=\\'%23f0f0f0\\' width=\\'400\\' height=\\'200\\'/%3E%3Ctext fill=\\'%23999\\' x=\\'50%25\\' y=\\'50%25\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-family=\\'sans-serif\\' font-size=\\'18\\'%3ENo Image%3C/text%3E%3C/svg%3E'">
+                    <div class="news-content">
+                        <h3 class="news-title">${article.title}</h3>
+                        <div class="news-meta">
+                            <span class="news-source">${article.source.name}</span>
+                            <span>${formatDate(article.publishedAt)}</span>
+                        </div>
+                        <p class="news-description">${article.description || 'No description available.'}</p>
+                        <a href="${article.url}" target="_blank" class="news-link">Read More →</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function searchNews() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const query = document.getElementById('searchQuery').value.trim();
+
+            if (!apiKey) {
+                showMessage('Please enter your NewsAPI key!', 'error');
+                return;
+            }
+
+            if (!query) {
+                showMessage('Please enter a search keyword!', 'error');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('englishNews').style.display = 'none';
+            document.getElementById('koreanNews').style.display = 'none';
+            document.getElementById('searchBtn').disabled = true;
+
+            // Calculate date 2 days ago
+            const twoDaysAgo = new Date();
+            twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+            const fromDate = twoDaysAgo.toISOString().split('T')[0];
+
+            try {
+                // Search English news
+                const englishResponse = await fetch(
+                    `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=en&from=${fromDate}&sortBy=publishedAt&pageSize=2&apiKey=${apiKey}`
+                );
+
+                if (!englishResponse.ok) {
+                    throw new Error(`API Error: ${englishResponse.status} - ${englishResponse.statusText}`);
+                }
+
+                const englishData = await englishResponse.json();
+
+                // Search Korean news
+                const koreanResponse = await fetch(
+                    `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=ko&from=${fromDate}&sortBy=publishedAt&pageSize=2&apiKey=${apiKey}`
+                );
+
+                if (!koreanResponse.ok) {
+                    throw new Error(`API Error: ${koreanResponse.status} - ${koreanResponse.statusText}`);
+                }
+
+                const koreanData = await koreanResponse.json();
+
+                // Display English news
+                const englishGrid = document.getElementById('englishGrid');
+                if (englishData.articles && englishData.articles.length > 0) {
+                    englishGrid.innerHTML = englishData.articles
+                        .slice(0, 2)
+                        .map(article => createNewsCard(article))
+                        .join('');
+                    document.getElementById('englishNews').style.display = 'block';
+                } else {
+                    englishGrid.innerHTML = '<p style="color: white;">No English news found for this query.</p>';
+                    document.getElementById('englishNews').style.display = 'block';
+                }
+
+                // Display Korean news
+                const koreanGrid = document.getElementById('koreanGrid');
+                if (koreanData.articles && koreanData.articles.length > 0) {
+                    koreanGrid.innerHTML = koreanData.articles
+                        .slice(0, 2)
+                        .map(article => createNewsCard(article))
+                        .join('');
+                    document.getElementById('koreanNews').style.display = 'block';
+                } else {
+                    koreanGrid.innerHTML = '<p style="color: white;">No Korean news found for this query.</p>';
+                    document.getElementById('koreanNews').style.display = 'block';
+                }
+
+                showMessage(`Found ${englishData.articles.length} English and ${koreanData.articles.length} Korean articles`, 'info');
+
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                showMessage(`Error: ${error.message}. Please check your API key and try again.`, 'error');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('searchBtn').disabled = false;
+            }
+        }
+
+        // Allow Enter key to trigger search
+        document.getElementById('searchQuery').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchNews();
+            }
+        });
+
+        document.getElementById('apiKey').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchNews();
+            }
+        });
+    </script>
+</body>
+</html>
