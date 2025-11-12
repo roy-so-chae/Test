@@ -1,6 +1,6 @@
 # 📰 Snews - News Search Web App
 
-![Version](https://img.shields.io/badge/version-1.3.4-blue.svg)
+![Version](https://img.shields.io/badge/version-1.3.5-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 [![Download](https://img.shields.io/badge/download-Snews.html-brightgreen.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/raw/main/Snews/Snews.html)
@@ -198,7 +198,16 @@ sortBy=publishedAt  // relevancy, popularity 등으로 변경 가능
 
 ## 📝 버전 히스토리
 
-### Version 1.3.4 (2025-11-12) 🆕 **클라이언트 필터링 - 검색 에러 완전 해결**
+### Version 1.3.5 (2025-11-12) 🆕 **스마트 하이브리드 검색 - API 우선 + Fallback**
+- **API 검색 우선** - 검색어가 있을 때 NewsAPI에 직접 쿼리하여 정확한 결과 제공
+- **지능형 Fallback** - API 검색 결과 없으면 자동으로 일반 헤드라인에서 클라이언트 필터링
+- **확장된 검색 범위** - title, description뿐만 아니라 source name, content도 검색
+- **pageSize 100으로 증가** - 더 많은 기사 풀에서 검색하여 결과 품질 대폭 향상
+- **"google" 등 특정 키워드 검색 완벽 작동** - API 검색으로 관련 기사 정확히 매칭
+- **이중 안전장치** - API 실패 시에도 클라이언트 필터링으로 결과 보장
+- **최적의 사용자 경험** - 검색어 있으면 API 검색, 없으면 헤드라인, 실패 시 자동 fallback
+
+### Version 1.3.4 (2025-11-12) **클라이언트 필터링 - 검색 에러 완전 해결**
 - **클라이언트 사이드 필터링** - API 쿼리 대신 브라우저에서 검색어 필터링
 - **"No news found" 에러 완전 해결** - 항상 헤드라인을 가져와서 필터링하므로 결과 보장
 - **더 안정적인 검색** - 검색어가 있든 없든 항상 뉴스 결과 제공
