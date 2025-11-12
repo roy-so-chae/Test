@@ -1,6 +1,6 @@
 # 📰 Snews - News Search Web App
 
-![Version](https://img.shields.io/badge/version-1.3.3-blue.svg)
+![Version](https://img.shields.io/badge/version-1.3.4-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 [![Download](https://img.shields.io/badge/download-Snews.html-brightgreen.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/raw/main/Snews/Snews.html)
@@ -198,7 +198,16 @@ sortBy=publishedAt  // relevancy, popularity 등으로 변경 가능
 
 ## 📝 버전 히스토리
 
-### Version 1.3.3 (2025-11-10) 🆕 **검색어 선택 사항 - 헤드라인 검색 지원**
+### Version 1.3.4 (2025-11-12) 🆕 **클라이언트 필터링 - 검색 에러 완전 해결**
+- **클라이언트 사이드 필터링** - API 쿼리 대신 브라우저에서 검색어 필터링
+- **"No news found" 에러 완전 해결** - 항상 헤드라인을 가져와서 필터링하므로 결과 보장
+- **더 안정적인 검색** - 검색어가 있든 없든 항상 뉴스 결과 제공
+- **향상된 메시지** - 검색 결과에 따라 맞춤형 메시지 표시
+- **필터 키워드로 UI 변경** - 사용자가 검색 방식을 명확히 이해
+- **pageSize 20으로 증가** - 더 많은 뉴스에서 필터링하여 결과 품질 향상
+- **무료 플랜 최적화** - top-headlines API의 제한사항 완벽 회피
+
+### Version 1.3.3 (2025-11-10) **검색어 선택 사항 - 헤드라인 검색 지원**
 - **검색어 선택 사항** - 검색어 없이도 최신 헤드라인 가져오기
 - **"No news found" 에러 해결** - 검색어가 없거나 결과 없을 때 대응
 - **일반 헤드라인 지원** - 빈 검색으로 국가별 주요 뉴스 표시
