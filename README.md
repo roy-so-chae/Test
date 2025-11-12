@@ -3,8 +3,34 @@
 ![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
+[![Download](https://img.shields.io/badge/download-Snews.html-brightgreen.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/raw/main/Snews.html)
 
 **Snews**는 영어와 한국어 뉴스를 검색할 수 있는 독립 실행형 웹 애플리케이션입니다.
+
+## 📥 다운로드
+
+### 빠른 다운로드 (권장)
+**단 하나의 HTML 파일로 모든 기능 포함!**
+
+1. **직접 다운로드**:
+   - [Snews.html 다운로드](https://github.com/YOUR_USERNAME/YOUR_REPO/raw/main/Snews.html)
+   - 또는 아래 링크에서 `Snews.html` 파일을 우클릭 → 다른 이름으로 저장
+
+2. **GitHub에서 다운로드**:
+   ```bash
+   # Git 클론
+   git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+   cd YOUR_REPO
+   ```
+
+3. **파일만 필요한 경우**:
+   - GitHub 저장소 방문: [YOUR_REPO](https://github.com/YOUR_USERNAME/YOUR_REPO)
+   - `Snews.html` 클릭 → `Raw` 버튼 클릭 → 우클릭하여 저장
+
+### 실행 방법
+1. 다운로드한 `Snews.html` 파일을 **더블클릭**
+2. 브라우저에서 자동으로 열림
+3. 바로 사용 가능! 🎉
 
 ## ✨ 주요 기능
 
@@ -25,18 +51,15 @@
 ## 🚀 빠른 시작
 
 ### 방법 1: 데모 모드 (API 키 불필요) ⭐ 추천!
-1. `Snews.html` 파일을 브라우저에서 엽니다
-2. 자동으로 데모 모드가 실행되어 샘플 뉴스가 표시됩니다
-3. 또는 **🎬 Demo Mode** 버튼을 클릭하세요
+1. 위의 **📥 다운로드** 섹션에서 `Snews.html` 다운로드
+2. 파일을 **더블클릭**하여 브라우저에서 엽니다
+3. **🎬 Demo Mode** 버튼을 클릭하여 샘플 뉴스 확인
+4. 끝! 설치나 설정 없이 바로 사용 가능합니다
 
 ### 방법 2: 실시간 뉴스 검색 (API 키 필요)
 
 #### 1. 파일 다운로드
-```bash
-# 리포지토리 클론
-git clone <repository-url>
-cd Test
-```
+위의 **📥 다운로드** 섹션에서 `Snews.html` 다운로드
 
 #### 2. API 키 발급
 1. [NewsAPI.org](https://newsapi.org/register)에 접속
@@ -98,9 +121,14 @@ cd Test
 
 ```
 Test/
-├── Snews.html          # 메인 웹 애플리케이션
+├── Snews.html          # 메인 웹 애플리케이션 (이 파일만 있으면 됩니다!)
 └── README.md           # 프로젝트 문서
 ```
+
+**중요**: `Snews.html` 파일 **하나만** 다운로드하면 모든 기능을 사용할 수 있습니다!
+- CSS, JavaScript 모두 포함
+- 외부 라이브러리 불필요
+- 인터넷만 연결되면 작동
 
 ## ⚙️ 설정 옵션
 
