@@ -3,7 +3,7 @@
 ![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
-[![Download](https://img.shields.io/badge/download-Snews.html-brightgreen.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/raw/main/Snews.html)
+[![Download](https://img.shields.io/badge/download-Snews.html-brightgreen.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/raw/main/Snews/Snews.html)
 
 **Snews**는 영어와 한국어 뉴스를 검색할 수 있는 독립 실행형 웹 애플리케이션입니다.
 
@@ -13,19 +13,19 @@
 **단 하나의 HTML 파일로 모든 기능 포함!**
 
 1. **직접 다운로드**:
-   - [Snews.html 다운로드](https://github.com/YOUR_USERNAME/YOUR_REPO/raw/main/Snews.html)
-   - 또는 아래 링크에서 `Snews.html` 파일을 우클릭 → 다른 이름으로 저장
+   - [Snews.html 다운로드](https://github.com/YOUR_USERNAME/YOUR_REPO/raw/main/Snews/Snews.html)
+   - 또는 아래 링크에서 `Snews/Snews.html` 파일을 우클릭 → 다른 이름으로 저장
 
 2. **GitHub에서 다운로드**:
    ```bash
    # Git 클론
    git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
-   cd YOUR_REPO
+   cd YOUR_REPO/Snews
    ```
 
 3. **파일만 필요한 경우**:
    - GitHub 저장소 방문: [YOUR_REPO](https://github.com/YOUR_USERNAME/YOUR_REPO)
-   - `Snews.html` 클릭 → `Raw` 버튼 클릭 → 우클릭하여 저장
+   - `Snews` 폴더 → `Snews.html` 클릭 → `Raw` 버튼 클릭 → 우클릭하여 저장
 
 ### 실행 방법
 1. 다운로드한 `Snews.html` 파일을 **더블클릭**
@@ -121,8 +121,9 @@
 
 ```
 Test/
-├── Snews.html          # 메인 웹 애플리케이션 (이 파일만 있으면 됩니다!)
-└── README.md           # 프로젝트 문서
+└── Snews/
+    ├── Snews.html      # 메인 웹 애플리케이션 (이 파일만 있으면 됩니다!)
+    └── README.md       # 프로젝트 문서
 ```
 
 **중요**: `Snews.html` 파일 **하나만** 다운로드하면 모든 기능을 사용할 수 있습니다!
