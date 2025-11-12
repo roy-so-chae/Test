@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
     ╔═══════════════════════════════════════════════════════════════╗
-    ║                   📰 Snews v1.3.2                              ║
+    ║                   📰 Snews v1.3.3                              ║
     ║            News Search Web Application                         ║
     ║                                                                ║
     ║  🌐 Single HTML file - All features included!                 ║
@@ -31,7 +31,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Search - Snews v1.3.2</title>
+    <title>News Search - Snews v1.3.3</title>
     <style>
         * {
             margin: 0;
@@ -307,7 +307,7 @@
         <header>
             <h1>📰 Snews - News Search</h1>
             <p>Search latest news in English and Korean (Last 2 days)</p>
-            <span class="version">v1.3.2</span>
+            <span class="version">v1.3.3</span>
         </header>
 
         <div class="search-section">
@@ -324,8 +324,8 @@
             </div>
 
             <div class="input-group">
-                <label for="searchQuery">Search Keywords:</label>
-                <input type="text" id="searchQuery" placeholder="e.g., technology, sports, politics" value="technology" />
+                <label for="searchQuery">Search Keywords (Optional - leave empty for top headlines):</label>
+                <input type="text" id="searchQuery" placeholder="Leave empty for top headlines, or enter: technology, sports, politics..." value="" />
             </div>
 
             <div class="button-group">
@@ -350,18 +350,18 @@
         </div>
 
         <footer>
-            <p><strong>Snews v1.3.2</strong> | Made with ❤️ for news enthusiasts</p>
+            <p><strong>Snews v1.3.3</strong> | Made with ❤️ for news enthusiasts</p>
             <p>Powered by <a href="https://newsapi.org" target="_blank">NewsAPI.org</a></p>
         </footer>
     </div>
 
     <script>
         // Application version
-        const APP_VERSION = '1.3.2';
+        const APP_VERSION = '1.3.3';
         console.log(`%cSnews v${APP_VERSION}`, 'color: #667eea; font-size: 20px; font-weight: bold;');
         console.log('News Search Web Application - 100% Free Plan Compatible!');
         console.log('Using top-headlines API - Works with ALL free NewsAPI keys!');
-        console.log('CORS-enabled with multiple fallback proxies!');
+        console.log('Search is now optional - leave empty for top headlines!');
 
         // Sample demo data
         const demoData = {
@@ -517,12 +517,9 @@
                 return;
             }
 
-            if (!query) {
-                showMessage('⚠️ Please enter a search keyword!', 'error');
-                return;
-            }
-
-            console.log('Searching for:', query);
+            // Query is now optional - if empty, get general top headlines
+            const searchTerm = query || '';
+            console.log('Searching for:', searchTerm || 'All top headlines');
             console.log('API Key provided:', apiKey.substring(0, 8) + '...');
             console.log('Using top-headlines API (free plan compatible)');
 
@@ -555,12 +552,15 @@
                         console.log(`Trying CORS proxy: ${proxy.substring(0, 30)}...`);
 
                         // Fetch US news (English)
-                        const usUrl = `https://newsapi.org/v2/top-headlines?country=us&q=${encodeURIComponent(query)}&pageSize=10&apiKey=${apiKey}`;
+                        // Build URL with optional query parameter
+                        const queryParam = searchTerm ? `&q=${encodeURIComponent(searchTerm)}` : '';
+                        const usUrl = `https://newsapi.org/v2/top-headlines?country=us${queryParam}&pageSize=10&apiKey=${apiKey}`;
                         const usProxyUrl = proxy.includes('allorigins')
                             ? proxy + encodeURIComponent(usUrl)
                             : proxy + usUrl;
 
                         console.log('Fetching US news...');
+                        console.log('API URL:', usUrl.replace(apiKey, 'API_KEY_HIDDEN'));
                         const usResponse = await fetch(usProxyUrl);
                         console.log('US Response status:', usResponse.status, usResponse.statusText);
 
@@ -573,7 +573,7 @@
                         console.log('US articles received:', usData.articles ? usData.articles.length : 0);
 
                         // Fetch KR news (Korean)
-                        const krUrl = `https://newsapi.org/v2/top-headlines?country=kr&q=${encodeURIComponent(query)}&pageSize=10&apiKey=${apiKey}`;
+                        const krUrl = `https://newsapi.org/v2/top-headlines?country=kr${queryParam}&pageSize=10&apiKey=${apiKey}`;
                         const krProxyUrl = proxy.includes('allorigins')
                             ? proxy + encodeURIComponent(krUrl)
                             : proxy + krUrl;

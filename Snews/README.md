@@ -1,6 +1,6 @@
 # 📰 Snews - News Search Web App
 
-![Version](https://img.shields.io/badge/version-1.3.2-blue.svg)
+![Version](https://img.shields.io/badge/version-1.3.3-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 [![Download](https://img.shields.io/badge/download-Snews.html-brightgreen.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/raw/main/Snews/Snews.html)
@@ -198,7 +198,15 @@ sortBy=publishedAt  // relevancy, popularity 등으로 변경 가능
 
 ## 📝 버전 히스토리
 
-### Version 1.3.2 (2025-11-10) 🆕 **안정성 개선 - 다중 프록시 지원**
+### Version 1.3.3 (2025-11-10) 🆕 **검색어 선택 사항 - 헤드라인 검색 지원**
+- **검색어 선택 사항** - 검색어 없이도 최신 헤드라인 가져오기
+- **"No news found" 에러 해결** - 검색어가 없거나 결과 없을 때 대응
+- **일반 헤드라인 지원** - 빈 검색으로 국가별 주요 뉴스 표시
+- **UI 개선** - 검색어 필드에 선택 사항 명시
+- **더 많은 뉴스** - 검색어 없이도 미국/한국 주요 뉴스 확인
+- **유연한 검색** - 특정 주제 검색 또는 전체 헤드라인 선택 가능
+
+### Version 1.3.2 (2025-11-10) **안정성 개선 - 다중 프록시 지원**
 - **다중 CORS 프록시** - 3개의 프록시를 순차적으로 시도
 - **자동 Fallback** - 하나가 실패하면 자동으로 다음 프록시 시도
 - **Fetch 에러 해결** - "Fail to fetch" 에러 대응
