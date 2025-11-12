@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>이미지 분석기 v1.1.0</title>
+    <title>이미지 분석기 v1.2.0</title>
     <script src="config.js" onerror="window.CONFIG = { CLAUDE_API_KEY: '' }"></script>
     <style>
         * {
@@ -195,6 +195,114 @@
             margin-top: 5px;
         }
 
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .modal-header p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            text-align: right;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 8px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-small:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-small.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-small.primary:hover {
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+        }
+
+        .api-key-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: underline;
+            padding: 5px 0;
+        }
+
+        .btn-link:hover {
+            color: #764ba2;
+        }
+
         @media (max-width: 480px) {
             .header h1 {
                 font-size: 24px;
@@ -203,13 +311,19 @@
             .content {
                 padding: 20px 15px;
             }
+
+            .modal-content {
+                margin: 30% auto;
+                padding: 20px;
+                max-width: 90%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>이미지 분석기 <span class="version">v1.1.0</span></h1>
+            <h1>이미지 분석기 <span class="version">v1.2.0</span></h1>
         </div>
 
         <div class="content">
@@ -217,10 +331,14 @@
                 이미지 URL을 입력하면 AI가 이미지를 분석하여 설명해드립니다.
             </div>
 
-            <div class="input-group" id="apiKeyGroup">
-                <label for="apiKey">Claude API 키 (선택)</label>
-                <input type="text" id="apiKey" placeholder="sk-ant-api03-... (config.js에 설정하거나 여기에 입력)" autocomplete="off">
+            <div class="input-group" id="apiKeyGroup" style="display: none;">
+                <label for="apiKey">Claude API 키</label>
+                <input type="text" id="apiKey" placeholder="sk-ant-api03-..." autocomplete="off" readonly>
                 <div class="api-key-saved" id="apiKeySaved"></div>
+                <div class="api-key-actions">
+                    <button class="btn-link" onclick="openApiKeyModal()">API 키 변경</button>
+                    <button class="btn-link" onclick="deleteApiKey()" style="color: #c33;">API 키 삭제</button>
+                </div>
             </div>
 
             <div class="input-group">
@@ -250,39 +368,138 @@
         </div>
     </div>
 
+    <!-- API 키 설정 모달 -->
+    <div id="apiKeyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔑 API 키 설정</h2>
+                <p>이미지 분석을 위해 Claude API 키가 필요합니다.<br>
+                <small><a href="https://console.anthropic.com/" target="_blank" style="color: #667eea;">console.anthropic.com</a>에서 발급받을 수 있습니다.</small></p>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="modalApiKey">Claude API 키</label>
+                    <input type="text" id="modalApiKey" placeholder="sk-ant-api03-..." autocomplete="off">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-small" onclick="closeApiKeyModal()">취소</button>
+                <button class="btn-small primary" onclick="saveApiKey()">저장하고 시작</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // API 키 관리
         const API_KEY_STORAGE = 'claude_api_key';
+        let currentApiKey = '';
 
-        // 페이지 로드 시 저장된 API 키 불러오기
+        // 페이지 로드 시 API 키 자동 설정
         window.addEventListener('DOMContentLoaded', () => {
-            // config.js에서 API 키 자동 로드
-            if (window.CONFIG && window.CONFIG.CLAUDE_API_KEY && window.CONFIG.CLAUDE_API_KEY !== 'your-api-key-here') {
-                document.getElementById('apiKey').value = window.CONFIG.CLAUDE_API_KEY;
-                document.getElementById('apiKeySaved').textContent = 'config.js에서 자동 로드됨';
-                document.getElementById('apiKeySaved').style.color = '#4caf50';
-                document.getElementById('infoMessage').innerHTML = '이미지 URL을 입력하면 AI가 이미지를 분석하여 설명해드립니다.<br><small style="color: #4caf50;">✓ API 키가 config.js에서 자동으로 로드되었습니다.</small>';
+            initializeApiKey();
+        });
+
+        function initializeApiKey() {
+            // 1순위: config.js에서 API 키 자동 로드
+            if (window.CONFIG && window.CONFIG.CLAUDE_API_KEY &&
+                window.CONFIG.CLAUDE_API_KEY !== 'your-api-key-here' &&
+                window.CONFIG.CLAUDE_API_KEY !== '') {
+                currentApiKey = window.CONFIG.CLAUDE_API_KEY;
+                updateApiKeyDisplay('config.js에서 자동 로드됨');
                 return;
             }
 
-            // localStorage에서 API 키 불러오기
+            // 2순위: localStorage에서 API 키 불러오기
             const savedKey = localStorage.getItem(API_KEY_STORAGE);
-            if (savedKey) {
-                document.getElementById('apiKey').value = savedKey;
-                document.getElementById('apiKeySaved').textContent = '저장된 API 키 사용 중';
+            if (savedKey && savedKey.trim() !== '') {
+                currentApiKey = savedKey;
+                updateApiKeyDisplay('저장된 API 키 사용 중');
+                return;
             }
-        });
 
-        // API 키 변경 시 저장
-        document.getElementById('apiKey').addEventListener('change', (e) => {
-            const key = e.target.value.trim();
-            if (key) {
-                localStorage.setItem(API_KEY_STORAGE, key);
-                document.getElementById('apiKeySaved').textContent = 'API 키가 저장되었습니다';
-            } else {
-                localStorage.removeItem(API_KEY_STORAGE);
-                document.getElementById('apiKeySaved').textContent = '';
+            // API 키가 없으면 모달 띄우기
+            openApiKeyModal(true);
+        }
+
+        function updateApiKeyDisplay(message) {
+            document.getElementById('apiKey').value = currentApiKey;
+            document.getElementById('apiKeySaved').textContent = message;
+            document.getElementById('apiKeyGroup').style.display = 'block';
+
+            const infoMessage = document.getElementById('infoMessage');
+            infoMessage.innerHTML = '이미지 URL을 입력하면 AI가 이미지를 분석하여 설명해드립니다.<br><small style="color: #4caf50;">✓ ' + message + '</small>';
+        }
+
+        function openApiKeyModal(required = false) {
+            const modal = document.getElementById('apiKeyModal');
+            const modalApiKey = document.getElementById('modalApiKey');
+
+            modal.style.display = 'block';
+            modalApiKey.value = '';
+            modalApiKey.focus();
+
+            // 필수 입력인 경우 취소 버튼 숨기기
+            if (required) {
+                const cancelBtn = modal.querySelector('.btn-small:not(.primary)');
+                if (cancelBtn) cancelBtn.style.display = 'none';
             }
+        }
+
+        function closeApiKeyModal() {
+            // API 키가 설정되어 있을 때만 닫기 허용
+            if (currentApiKey) {
+                document.getElementById('apiKeyModal').style.display = 'none';
+            } else {
+                alert('API 키를 입력해야 앱을 사용할 수 있습니다.');
+            }
+        }
+
+        function saveApiKey() {
+            const modalApiKey = document.getElementById('modalApiKey').value.trim();
+
+            if (!modalApiKey) {
+                alert('API 키를 입력해주세요.');
+                return;
+            }
+
+            if (!modalApiKey.startsWith('sk-ant-')) {
+                alert('올바른 Claude API 키 형식이 아닙니다.\nAPI 키는 "sk-ant-"로 시작해야 합니다.');
+                return;
+            }
+
+            // API 키 저장
+            currentApiKey = modalApiKey;
+            localStorage.setItem(API_KEY_STORAGE, currentApiKey);
+
+            updateApiKeyDisplay('API 키가 저장되었습니다');
+            document.getElementById('apiKeyModal').style.display = 'none';
+
+            // 취소 버튼 다시 표시
+            const cancelBtn = document.querySelector('#apiKeyModal .btn-small:not(.primary)');
+            if (cancelBtn) cancelBtn.style.display = 'inline-block';
+        }
+
+        function deleteApiKey() {
+            if (confirm('저장된 API 키를 삭제하시겠습니까?')) {
+                currentApiKey = '';
+                localStorage.removeItem(API_KEY_STORAGE);
+                document.getElementById('apiKey').value = '';
+                document.getElementById('apiKeySaved').textContent = '';
+                document.getElementById('apiKeyGroup').style.display = 'none';
+                document.getElementById('infoMessage').innerHTML = '이미지 URL을 입력하면 AI가 이미지를 분석하여 설명해드립니다.';
+
+                // 모달 다시 띄우기
+                openApiKeyModal(true);
+            }
+        }
+
+        // Enter 키로 API 키 저장
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('modalApiKey').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    saveApiKey();
+                }
+            });
         });
 
         function loadImage() {
@@ -325,7 +542,6 @@
         }
 
         async function analyzeImage() {
-            const apiKey = document.getElementById('apiKey').value.trim();
             const imageUrl = document.getElementById('imageUrl').value.trim();
             const loading = document.getElementById('loading');
             const errorDiv = document.getElementById('error');
@@ -337,8 +553,9 @@
             errorDiv.style.display = 'none';
             resultSection.style.display = 'none';
 
-            if (!apiKey) {
-                showError('Claude API 키를 입력해주세요.');
+            if (!currentApiKey) {
+                showError('Claude API 키가 설정되지 않았습니다.');
+                openApiKeyModal(true);
                 return;
             }
 
@@ -361,7 +578,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-api-key': apiKey,
+                        'x-api-key': currentApiKey,
                         'anthropic-version': '2023-06-01'
                     },
                     body: JSON.stringify({
