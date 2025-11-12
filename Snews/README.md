@@ -1,6 +1,6 @@
 # 📰 Snews - News Search Web App
 
-![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)
+![Version](https://img.shields.io/badge/version-1.3.2-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 [![Download](https://img.shields.io/badge/download-Snews.html-brightgreen.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/raw/main/Snews/Snews.html)
@@ -198,7 +198,15 @@ sortBy=publishedAt  // relevancy, popularity 등으로 변경 가능
 
 ## 📝 버전 히스토리
 
-### Version 1.3.1 (2025-11-10) 🆕 **CORS 문제 해결**
+### Version 1.3.2 (2025-11-10) 🆕 **안정성 개선 - 다중 프록시 지원**
+- **다중 CORS 프록시** - 3개의 프록시를 순차적으로 시도
+- **자동 Fallback** - 하나가 실패하면 자동으로 다음 프록시 시도
+- **Fetch 에러 해결** - "Fail to fetch" 에러 대응
+- **프록시 목록**: corsproxy.io, allorigins.win, cors-anywhere
+- **향상된 에러 처리** - 각 프록시 실패 시 자세한 로그 출력
+- **안정성 향상** - 프록시 서비스 장애 시에도 작동
+
+### Version 1.3.1 (2025-11-10) **CORS 문제 해결**
 - **CORS 프록시 추가** - allorigins.win을 통한 API 호출
 - **로컬 파일 지원** - HTML 파일을 직접 더블클릭으로 열어도 작동
 - **file:// 프로토콜 지원** - 웹서버 없이 브라우저에서 바로 실행

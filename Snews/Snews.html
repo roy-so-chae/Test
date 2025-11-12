@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
     ╔═══════════════════════════════════════════════════════════════╗
-    ║                   📰 Snews v1.3.1                              ║
+    ║                   📰 Snews v1.3.2                              ║
     ║            News Search Web Application                         ║
     ║                                                                ║
     ║  🌐 Single HTML file - All features included!                 ║
@@ -31,7 +31,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Search - Snews v1.3.1</title>
+    <title>News Search - Snews v1.3.2</title>
     <style>
         * {
             margin: 0;
@@ -307,7 +307,7 @@
         <header>
             <h1>📰 Snews - News Search</h1>
             <p>Search latest news in English and Korean (Last 2 days)</p>
-            <span class="version">v1.3.1</span>
+            <span class="version">v1.3.2</span>
         </header>
 
         <div class="search-section">
@@ -350,18 +350,18 @@
         </div>
 
         <footer>
-            <p><strong>Snews v1.3.1</strong> | Made with ❤️ for news enthusiasts</p>
+            <p><strong>Snews v1.3.2</strong> | Made with ❤️ for news enthusiasts</p>
             <p>Powered by <a href="https://newsapi.org" target="_blank">NewsAPI.org</a></p>
         </footer>
     </div>
 
     <script>
         // Application version
-        const APP_VERSION = '1.3.1';
+        const APP_VERSION = '1.3.2';
         console.log(`%cSnews v${APP_VERSION}`, 'color: #667eea; font-size: 20px; font-weight: bold;');
         console.log('News Search Web Application - 100% Free Plan Compatible!');
         console.log('Using top-headlines API - Works with ALL free NewsAPI keys!');
-        console.log('CORS-enabled for local file access!');
+        console.log('CORS-enabled with multiple fallback proxies!');
 
         // Sample demo data
         const demoData = {
@@ -538,57 +538,89 @@
 
             try {
                 // Use top-headlines API which is fully supported in free plan
-                // Use CORS proxy to avoid CORS errors when opening HTML file directly
-                const corsProxy = 'https://api.allorigins.win/raw?url=';
+                // Multiple CORS proxies with fallback for reliability
+                const corsProxies = [
+                    'https://corsproxy.io/?',
+                    'https://api.allorigins.win/raw?url=',
+                    'https://cors-anywhere.herokuapp.com/'
+                ];
 
-                // Fetch US news (English)
-                const usUrl = `https://newsapi.org/v2/top-headlines?country=us&q=${encodeURIComponent(query)}&pageSize=10&apiKey=${apiKey}`;
-                const usProxyUrl = corsProxy + encodeURIComponent(usUrl);
-                console.log('Fetching US news...');
-                console.log('URL:', usUrl.replace(apiKey, 'API_KEY_HIDDEN'));
-                console.log('Using CORS proxy for local file access');
+                let usData = null;
+                let krData = null;
+                let proxyUsed = '';
 
-                const usResponse = await fetch(usProxyUrl);
-                console.log('US Response status:', usResponse.status, usResponse.statusText);
+                // Try each proxy until one works
+                for (const proxy of corsProxies) {
+                    try {
+                        console.log(`Trying CORS proxy: ${proxy.substring(0, 30)}...`);
 
-                if (!usResponse.ok) {
-                    const errorData = await usResponse.json().catch(() => ({}));
-                    console.error('US API Error Response:', errorData);
+                        // Fetch US news (English)
+                        const usUrl = `https://newsapi.org/v2/top-headlines?country=us&q=${encodeURIComponent(query)}&pageSize=10&apiKey=${apiKey}`;
+                        const usProxyUrl = proxy.includes('allorigins')
+                            ? proxy + encodeURIComponent(usUrl)
+                            : proxy + usUrl;
 
-                    if (usResponse.status === 401) {
-                        throw new Error('❌ Invalid API key. Please check your key and try again.');
-                    } else if (usResponse.status === 426) {
-                        throw new Error('⚠️ API upgrade required. This should not happen with top-headlines. Please try Demo Mode.');
-                    } else if (usResponse.status === 429) {
-                        throw new Error('⚠️ API rate limit exceeded (100 requests/day). Try again tomorrow or use Demo Mode.');
-                    } else {
-                        throw new Error(errorData.message || `API Error ${usResponse.status}: ${usResponse.statusText}`);
+                        console.log('Fetching US news...');
+                        const usResponse = await fetch(usProxyUrl);
+                        console.log('US Response status:', usResponse.status, usResponse.statusText);
+
+                        if (!usResponse.ok) {
+                            throw new Error(`Proxy ${proxy} failed: ${usResponse.status}`);
+                        }
+
+                        usData = await usResponse.json();
+                        console.log('US API Response:', usData);
+                        console.log('US articles received:', usData.articles ? usData.articles.length : 0);
+
+                        // Fetch KR news (Korean)
+                        const krUrl = `https://newsapi.org/v2/top-headlines?country=kr&q=${encodeURIComponent(query)}&pageSize=10&apiKey=${apiKey}`;
+                        const krProxyUrl = proxy.includes('allorigins')
+                            ? proxy + encodeURIComponent(krUrl)
+                            : proxy + krUrl;
+
+                        console.log('Fetching KR news...');
+                        const krResponse = await fetch(krProxyUrl);
+                        console.log('KR Response status:', krResponse.status, krResponse.statusText);
+
+                        if (krResponse.ok) {
+                            krData = await krResponse.json();
+                            console.log('KR API Response:', krData);
+                            console.log('KR articles received:', krData.articles ? krData.articles.length : 0);
+                        } else {
+                            console.warn('Korean news fetch failed, continuing with English news only');
+                            krData = { articles: [] };
+                        }
+
+                        proxyUsed = proxy;
+                        console.log(`✅ Successfully using proxy: ${proxy}`);
+                        break; // Success! Exit the loop
+
+                    } catch (proxyError) {
+                        console.warn(`Proxy ${proxy} failed:`, proxyError.message);
+                        if (proxy === corsProxies[corsProxies.length - 1]) {
+                            // Last proxy also failed
+                            throw new Error('All CORS proxies failed. Please try Demo Mode or use a local server.');
+                        }
+                        // Try next proxy
+                        continue;
                     }
                 }
 
-                const usData = await usResponse.json();
-                console.log('US API Response:', usData);
-                console.log('US articles received:', usData.articles ? usData.articles.length : 0);
-
-                // Fetch KR news (Korean)
-                const krUrl = `https://newsapi.org/v2/top-headlines?country=kr&q=${encodeURIComponent(query)}&pageSize=10&apiKey=${apiKey}`;
-                const krProxyUrl = corsProxy + encodeURIComponent(krUrl);
-                console.log('Fetching KR news...');
-                console.log('URL:', krUrl.replace(apiKey, 'API_KEY_HIDDEN'));
-
-                const krResponse = await fetch(krProxyUrl);
-                console.log('KR Response status:', krResponse.status, krResponse.statusText);
-
-                if (!krResponse.ok) {
-                    const errorData = await krResponse.json().catch(() => ({}));
-                    console.error('KR API Error Response:', errorData);
-                    // Don't throw error for KR, just log it and continue with US news
-                    console.warn('Korean news fetch failed, continuing with English news only');
+                // Check if we got data
+                if (!usData) {
+                    throw new Error('Failed to fetch news from all proxies. Try Demo Mode.');
                 }
 
-                const krData = krResponse.ok ? await krResponse.json() : { articles: [] };
-                console.log('KR API Response:', krData);
-                console.log('KR articles received:', krData.articles ? krData.articles.length : 0);
+                // Check for API errors in the response
+                if (usData.status === 'error') {
+                    console.error('API returned error status:', usData);
+                    throw new Error(usData.message || 'API returned an error. Please check your API key.');
+                }
+
+                if (!usData.articles || usData.articles.length === 0) {
+                    console.warn('No articles found for query:', query);
+                    throw new Error(`No news found for "${query}". Try different keywords or Demo Mode.`);
+                }
 
                 const english = usData.articles || [];
                 const korean = krData.articles || [];
