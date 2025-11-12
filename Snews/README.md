@@ -1,6 +1,6 @@
 # 📰 Snews - News Search Web App
 
-![Version](https://img.shields.io/badge/version-1.3.5-blue.svg)
+![Version](https://img.shields.io/badge/version-1.3.6-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 [![Download](https://img.shields.io/badge/download-Snews.html-brightgreen.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/raw/main/Snews/Snews.html)
@@ -198,7 +198,16 @@ sortBy=publishedAt  // relevancy, popularity 등으로 변경 가능
 
 ## 📝 버전 히스토리
 
-### Version 1.3.5 (2025-11-12) 🆕 **스마트 하이브리드 검색 - API 우선 + Fallback**
+### Version 1.3.6 (2025-11-12) 🆕 **날짜 범위 확장 - 최근 5일 뉴스 검색**
+- **5일 날짜 범위** - 최근 2일 → 최근 5일로 확장하여 더 많은 뉴스 제공
+- **자동 날짜 필터링** - publishedAt 필드 기반으로 클라이언트에서 자동 필터링
+- **UI 업데이트** - "Last 2 days" → "Last 5 days"로 명확한 안내
+- **성공 메시지 개선** - 검색 결과 메시지에 "(Last 5 days)" 표시
+- **더 풍부한 검색 결과** - 5일치 뉴스에서 검색하여 더 많은 관련 기사 발견
+- **콘솔 로깅 강화** - 날짜 필터링 전후 기사 수 표시로 투명성 향상
+- **무료 플랜 호환** - top-headlines API의 자연스러운 날짜 범위 활용
+
+### Version 1.3.5 (2025-11-12) **스마트 하이브리드 검색 - API 우선 + Fallback**
 - **API 검색 우선** - 검색어가 있을 때 NewsAPI에 직접 쿼리하여 정확한 결과 제공
 - **지능형 Fallback** - API 검색 결과 없으면 자동으로 일반 헤드라인에서 클라이언트 필터링
 - **확장된 검색 범위** - title, description뿐만 아니라 source name, content도 검색
