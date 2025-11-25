@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIX 로보 어드바이저 - 스마트 포트폴리오 관리</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --cash-color: #10b981;
+            --spy-color: #3b82f6;
+            --qqq-color: #8b5cf6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        section h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .market-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .market-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 25px;
+            color: white;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-header h3 {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .card-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .card-change {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .card-change.positive {
+            color: #34d399;
+        }
+
+        .card-change.negative {
+            color: #fca5a5;
+        }
+
+        .card-time {
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        .strategy-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .strategy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .strategy-header h3 {
+            font-size: 1.8em;
+        }
+
+        .risk-badge {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .strategy-description {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .allocation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .allocation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .allocation-chart {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .allocation-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .allocation-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--bg-color);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .allocation-item.cash {
+            border-left-color: var(--cash-color);
+        }
+
+        .allocation-item.spy {
+            border-left-color: var(--spy-color);
+        }
+
+        .allocation-item.qqq {
+            border-left-color: var(--qqq-color);
+        }
+
+        .allocation-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .color-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .cash-color {
+            background-color: var(--cash-color);
+        }
+
+        .spy-color {
+            background-color: var(--spy-color);
+        }
+
+        .qqq-color {
+            background-color: var(--qqq-color);
+        }
+
+        .allocation-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .calculator-card {
+            background: var(--bg-color);
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .calculator-input {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .calculator-input label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .calculator-input input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            font-size: 1.1em;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .calculator-input input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .portfolio-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .breakdown-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+
+        .breakdown-label {
+            font-weight: 500;
+        }
+
+        .breakdown-value {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .breakdown-total .breakdown-value {
+            color: white;
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .guide-card {
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .guide-card.aggressive {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .guide-card.balanced {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .guide-card.conservative {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .guide-card.very-conservative {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .guide-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .guide-condition {
+            font-size: 0.95em;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .guide-allocation {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 0.95em;
+        }
+
+        .guide-allocation div {
+            margin: 5px 0;
+        }
+
+        .guide-desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .btn-refresh {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            background: #fee;
+            border: 1px solid #fcc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #c00;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            section {
+                padding: 20px;
+            }
+
+            section h2 {
+                font-size: 1.5em;
+            }
+
+            .card-value {
+                font-size: 2em;
+            }
+
+            .calculator-input {
+                flex-direction: column;
+            }
+
+            .calculator-input input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 VIX 로보 어드바이저</h1>
+            <p class="subtitle">변동성 지수 기반 스마트 포트폴리오 관리</p>
+        </header>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>데이터를 불러오는 중...</p>
+        </div>
+
+        <div id="content" style="display: none;">
+            <!-- 시장 현황 -->
+            <section class="market-overview">
+                <h2>📈 시장 현황</h2>
+                <div class="market-cards">
+                    <div class="market-card vix-card">
+                        <div class="card-header">
+                            <h3>VIX 지수</h3>
+                        </div>
+                        <div class="card-value" id="vix-value">--</div>
+                        <div class="card-change" id="vix-change">--</div>
+                        <div class="card-time" id="update-time">--</div>
+                    </div>
+
+                    <div class="market-card spy-card">
+                        <div class="card-header">
+                            <h3>SPY (S&P 500)</h3>
+                        </div>
+                        <div class="card-value" id="spy-value">--</div>
+                        <div class="card-change" id="spy-change">--</div>
+                    </div>
+
+                    <div class="market-card qqq-card">
+                        <div class="card-header">
+                            <h3>QQQ (Nasdaq 100)</h3>
+                        </div>
+                        <div class="card-value" id="qqq-value">--</div>
+                        <div class="card-change" id="qqq-change">--</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 추천 전략 -->
+            <section class="recommendation">
+                <h2>💡 이번 주 추천 전략</h2>
+                <div class="strategy-card">
+                    <div class="strategy-header">
+                        <h3 id="strategy-name">--</h3>
+                        <span class="risk-badge" id="risk-level">--</span>
+                    </div>
+                    <p class="strategy-description" id="strategy-description">--</p>
+                    <div class="recommendation-date" id="recommendation-date">--</div>
+                </div>
+            </section>
+
+            <!-- 포트폴리오 배분 -->
+            <section class="allocation">
+                <h2>🎯 추천 포트폴리오 배분</h2>
+                <div class="allocation-grid">
+                    <div class="allocation-chart">
+                        <canvas id="allocationChart"></canvas>
+                    </div>
+                    <div class="allocation-details">
+                        <div class="allocation-item cash">
+                            <div class="allocation-label">
+                                <span class="color-dot cash-color"></span>
+                                <span>현금 (Cash)</span>
+                            </div>
+                            <div class="allocation-value" id="cash-allocation">--%</div>
+                        </div>
+                        <div class="allocation-item spy">
+                            <div class="allocation-label">
+                                <span class="color-dot spy-color"></span>
+                                <span>SPY (S&P 500)</span>
+                            </div>
+                            <div class="allocation-value" id="spy-allocation">--%</div>
+                        </div>
+                        <div class="allocation-item qqq">
+                            <div class="allocation-label">
+                                <span class="color-dot qqq-color"></span>
+                                <span>QQQ (Nasdaq 100)</span>
+                            </div>
+                            <div class="allocation-value" id="qqq-allocation">--%</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 포트폴리오 계산기 -->
+            <section class="calculator">
+                <h2>💰 포트폴리오 계산기</h2>
+                <div class="calculator-card">
+                    <div class="calculator-input">
+                        <div style="flex: 1; min-width: 200px;">
+                            <label for="investment-amount">투자 금액 (USD)</label>
+                            <input type="number" id="investment-amount" value="10000" min="100" step="100">
+                        </div>
+                        <button id="calculate-btn" class="btn-primary">계산하기</button>
+                    </div>
+                    <div id="portfolio-result" style="display: none;">
+                        <h3>투자 상세</h3>
+                        <div class="portfolio-breakdown">
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">💵 현금</span>
+                                <span class="breakdown-value" id="calc-cash">$0</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">📊 SPY</span>
+                                <span class="breakdown-value" id="calc-spy">$0 (0 주)</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">💻 QQQ</span>
+                                <span class="breakdown-value" id="calc-qqq">$0 (0 주)</span>
+                            </div>
+                            <div class="breakdown-total">
+                                <span class="breakdown-label">총 투자액</span>
+                                <span class="breakdown-value" id="calc-total">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 전략 설명 -->
+            <section class="strategy-guide">
+                <h2>📚 전략 가이드</h2>
+                <div class="guide-grid">
+                    <div class="guide-card aggressive">
+                        <h3>🚀 공격적 전략</h3>
+                        <p class="guide-condition">VIX &lt; 15</p>
+                        <div class="guide-allocation">
+                            <div>현금: 10%</div>
+                            <div>SPY: 50%</div>
+                            <div>QQQ: 40%</div>
+                        </div>
+                        <p class="guide-desc">낮은 변동성 환경에서 성장주 중심의 공격적 투자</p>
+                    </div>
+
+                    <div class="guide-card balanced">
+                        <h3>⚖️ 균형 전략</h3>
+                        <p class="guide-condition">VIX 15-20</p>
+                        <div class="guide-allocation">
+                            <div>현금: 20%</div>
+                            <div>SPY: 45%</div>
+                            <div>QQQ: 35%</div>
+                        </div>
+                        <p class="guide-desc">정상 변동성 환경에서 균형잡힌 포트폴리오</p>
+                    </div>
+
+                    <div class="guide-card conservative">
+                        <h3>🛡️ 보수적 전략</h3>
+                        <p class="guide-condition">VIX 20-30</p>
+                        <div class="guide-allocation">
+                            <div>현금: 40%</div>
+                            <div>SPY: 40%</div>
+                            <div>QQQ: 20%</div>
+                        </div>
+                        <p class="guide-desc">높은 변동성 환경에서 안전자산 비중 확대</p>
+                    </div>
+
+                    <div class="guide-card very-conservative">
+                        <h3>🏰 매우 보수적 전략</h3>
+                        <p class="guide-condition">VIX &gt; 30</p>
+                        <div class="guide-allocation">
+                            <div>현금: 60%</div>
+                            <div>SPY: 30%</div>
+                            <div>QQQ: 10%</div>
+                        </div>
+                        <p class="guide-desc">극도의 변동성 환경에서 현금 중심의 방어적 운용</p>
+                    </div>
+                </div>
+            </section>
+
+            <button id="refresh-btn" class="btn-refresh">🔄 새로고침</button>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let allocationChart = null;
+        let currentData = null;
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMarketData();
+
+            // 새로고침 버튼
+            document.getElementById('refresh-btn').addEventListener('click', function() {
+                loadMarketData();
+            });
+
+            // 계산 버튼
+            document.getElementById('calculate-btn').addEventListener('click', function() {
+                calculatePortfolio();
+            });
+        });
+
+        // 시장 데이터 로드 (Yahoo Finance API 사용)
+        async function loadMarketData() {
+            showLoading(true);
+
+            try {
+                // 데모 데이터 사용 (실제로는 API 호출이 필요)
+                // Yahoo Finance API는 CORS 이슈가 있어 데모 데이터 사용
+                const demoData = generateDemoData();
+                currentData = demoData;
+                updateUI(demoData);
+                showLoading(false);
+            } catch (error) {
+                showError('데이터를 불러올 수 없습니다: ' + error.message);
+            }
+        }
+
+        // 데모 데이터 생성
+        function generateDemoData() {
+            const vixValue = 15 + Math.random() * 15; // 15-30 범위
+            const spyValue = 650 + Math.random() * 50;
+            const qqqValue = 580 + Math.random() * 50;
+
+            const allocation = calculateAllocation(vixValue);
+
+            return {
+                vix: {
+                    value: parseFloat(vixValue.toFixed(2)),
+                    change: parseFloat((Math.random() * 20 - 10).toFixed(2))
+                },
+                spy: {
+                    value: parseFloat(spyValue.toFixed(2)),
+                    change: parseFloat((Math.random() * 6 - 3).toFixed(2))
+                },
+                qqq: {
+                    value: parseFloat(qqqValue.toFixed(2)),
+                    change: parseFloat((Math.random() * 6 - 3).toFixed(2))
+                },
+                timestamp: new Date().toLocaleString('ko-KR'),
+                ...allocation
+            };
+        }
+
+        // VIX 기반 포트폴리오 배분 계산
+        function calculateAllocation(vixValue) {
+            let allocation, strategy, description, riskLevel;
+
+            if (vixValue < 15) {
+                allocation = { cash: 10, spy: 50, qqq: 40 };
+                strategy = "공격적 (Aggressive)";
+                description = "시장 변동성이 낮아 위험자산 비중을 높입니다. 기술주(QQQ) 비중이 높습니다.";
+                riskLevel = "높음";
+            } else if (vixValue < 20) {
+                allocation = { cash: 20, spy: 45, qqq: 35 };
+                strategy = "균형 (Balanced)";
+                description = "정상적인 시장 변동성으로 균형잡힌 포트폴리오를 유지합니다.";
+                riskLevel = "중간";
+            } else if (vixValue < 30) {
+                allocation = { cash: 40, spy: 40, qqq: 20 };
+                strategy = "보수적 (Conservative)";
+                description = "변동성이 높아져 현금 비중을 늘리고 안전자산 위주로 운용합니다.";
+                riskLevel = "낮음";
+            } else {
+                allocation = { cash: 60, spy: 30, qqq: 10 };
+                strategy = "매우 보수적 (Very Conservative)";
+                description = "극도의 시장 변동성으로 현금 비중을 대폭 늘리고 방어적으로 운용합니다.";
+                riskLevel = "매우 낮음";
+            }
+
+            return { allocation, strategy, description, riskLevel };
+        }
+
+        // UI 업데이트
+        function updateUI(data) {
+            // 시장 데이터
+            document.getElementById('vix-value').textContent = data.vix.value.toFixed(2);
+            updateChangeElement('vix-change', data.vix.change);
+
+            document.getElementById('spy-value').textContent = `$${data.spy.value.toFixed(2)}`;
+            updateChangeElement('spy-change', data.spy.change);
+
+            document.getElementById('qqq-value').textContent = `$${data.qqq.value.toFixed(2)}`;
+            updateChangeElement('qqq-change', data.qqq.change);
+
+            document.getElementById('update-time').textContent = `업데이트: ${data.timestamp}`;
+
+            // 전략 정보
+            document.getElementById('strategy-name').textContent = data.strategy;
+            document.getElementById('risk-level').textContent = `위험도: ${data.riskLevel}`;
+            document.getElementById('strategy-description').textContent = data.description;
+
+            const now = new Date();
+            document.getElementById('recommendation-date').textContent =
+                `추천일: ${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일`;
+
+            // 포트폴리오 배분
+            updateAllocation(data.allocation);
+        }
+
+        function updateChangeElement(elementId, change) {
+            const element = document.getElementById(elementId);
+            element.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+            element.className = `card-change ${change >= 0 ? 'positive' : 'negative'}`;
+        }
+
+        // 포트폴리오 배분 업데이트
+        function updateAllocation(allocation) {
+            document.getElementById('cash-allocation').textContent = `${allocation.cash}%`;
+            document.getElementById('spy-allocation').textContent = `${allocation.spy}%`;
+            document.getElementById('qqq-allocation').textContent = `${allocation.qqq}%`;
+
+            updateAllocationChart(allocation);
+        }
+
+        // 포트폴리오 배분 차트
+        function updateAllocationChart(allocation) {
+            const ctx = document.getElementById('allocationChart').getContext('2d');
+
+            if (allocationChart) {
+                allocationChart.destroy();
+            }
+
+            allocationChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['현금', 'SPY', 'QQQ'],
+                    datasets: [{
+                        data: [allocation.cash, allocation.spy, allocation.qqq],
+                        backgroundColor: [
+                            'rgb(16, 185, 129)',
+                            'rgb(59, 130, 246)',
+                            'rgb(139, 92, 246)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 14 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 포트폴리오 계산
+        function calculatePortfolio() {
+            const investment = parseFloat(document.getElementById('investment-amount').value);
+
+            if (isNaN(investment) || investment < 100) {
+                alert('최소 투자 금액은 $100입니다.');
+                return;
+            }
+
+            if (!currentData) {
+                alert('먼저 시장 데이터를 불러와주세요.');
+                return;
+            }
+
+            const allocation = currentData.allocation;
+            const spyPrice = currentData.spy.value;
+            const qqqPrice = currentData.qqq.value;
+
+            const cashAmount = investment * (allocation.cash / 100);
+            const spyAmount = investment * (allocation.spy / 100);
+            const qqqAmount = investment * (allocation.qqq / 100);
+
+            const spyShares = spyAmount / spyPrice;
+            const qqqShares = qqqAmount / qqqPrice;
+
+            document.getElementById('calc-cash').textContent =
+                `$${cashAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            document.getElementById('calc-spy').textContent =
+                `$${spyAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (${spyShares.toFixed(2)} 주)`;
+
+            document.getElementById('calc-qqq').textContent =
+                `$${qqqAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (${qqqShares.toFixed(2)} 주)`;
+
+            document.getElementById('calc-total').textContent =
+                `$${investment.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            document.getElementById('portfolio-result').style.display = 'block';
+        }
+
+        // 로딩 표시
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            const content = document.getElementById('content');
+
+            if (show) {
+                loading.style.display = 'block';
+                content.style.display = 'none';
+            } else {
+                loading.style.display = 'none';
+                content.style.display = 'block';
+            }
+        }
+
+        // 에러 표시
+        function showError(message) {
+            showLoading(false);
+            alert('오류: ' + message);
+        }
+    </script>
+</body>
+</html>
