@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIX 로보 어드바이저 - 스마트 포트폴리오 관리</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 VIX 로보 어드바이저</h1>
+            <p class="subtitle">변동성 지수 기반 스마트 포트폴리오 관리</p>
+        </header>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>데이터를 불러오는 중...</p>
+        </div>
+
+        <div id="content" style="display: none;">
+            <!-- 시장 현황 -->
+            <section class="market-overview">
+                <h2>📈 시장 현황</h2>
+                <div class="market-cards">
+                    <div class="market-card vix-card">
+                        <div class="card-header">
+                            <h3>VIX 지수</h3>
+                            <span class="info-icon" title="변동성 지수 - 시장의 두려움 지수">ℹ️</span>
+                        </div>
+                        <div class="card-value" id="vix-value">--</div>
+                        <div class="card-change" id="vix-change">--</div>
+                        <div class="card-time" id="update-time">--</div>
+                    </div>
+
+                    <div class="market-card spy-card">
+                        <div class="card-header">
+                            <h3>SPY (S&P 500)</h3>
+                            <span class="info-icon" title="S&P 500 ETF">ℹ️</span>
+                        </div>
+                        <div class="card-value" id="spy-value">--</div>
+                        <div class="card-change" id="spy-change">--</div>
+                    </div>
+
+                    <div class="market-card qqq-card">
+                        <div class="card-header">
+                            <h3>QQQ (Nasdaq 100)</h3>
+                            <span class="info-icon" title="Nasdaq 100 ETF">ℹ️</span>
+                        </div>
+                        <div class="card-value" id="qqq-value">--</div>
+                        <div class="card-change" id="qqq-change">--</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 추천 전략 -->
+            <section class="recommendation">
+                <h2>💡 이번 주 추천 전략</h2>
+                <div class="strategy-card">
+                    <div class="strategy-header">
+                        <h3 id="strategy-name">--</h3>
+                        <span class="risk-badge" id="risk-level">--</span>
+                    </div>
+                    <p class="strategy-description" id="strategy-description">--</p>
+                    <div class="recommendation-date" id="recommendation-date">--</div>
+                </div>
+            </section>
+
+            <!-- 포트폴리오 배분 -->
+            <section class="allocation">
+                <h2>🎯 추천 포트폴리오 배분</h2>
+                <div class="allocation-grid">
+                    <div class="allocation-chart">
+                        <canvas id="allocationChart"></canvas>
+                    </div>
+                    <div class="allocation-details">
+                        <div class="allocation-item cash">
+                            <div class="allocation-label">
+                                <span class="color-dot cash-color"></span>
+                                <span>현금 (Cash)</span>
+                            </div>
+                            <div class="allocation-value" id="cash-allocation">--%</div>
+                        </div>
+                        <div class="allocation-item spy">
+                            <div class="allocation-label">
+                                <span class="color-dot spy-color"></span>
+                                <span>SPY (S&P 500)</span>
+                            </div>
+                            <div class="allocation-value" id="spy-allocation">--%</div>
+                        </div>
+                        <div class="allocation-item qqq">
+                            <div class="allocation-label">
+                                <span class="color-dot qqq-color"></span>
+                                <span>QQQ (Nasdaq 100)</span>
+                            </div>
+                            <div class="allocation-value" id="qqq-allocation">--%</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 포트폴리오 계산기 -->
+            <section class="calculator">
+                <h2>💰 포트폴리오 계산기</h2>
+                <div class="calculator-card">
+                    <div class="calculator-input">
+                        <label for="investment-amount">투자 금액 (USD)</label>
+                        <input type="number" id="investment-amount" value="10000" min="100" step="100">
+                        <button id="calculate-btn" class="btn-primary">계산하기</button>
+                    </div>
+                    <div id="portfolio-result" style="display: none;">
+                        <h3>투자 상세</h3>
+                        <div class="portfolio-breakdown">
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">💵 현금</span>
+                                <span class="breakdown-value" id="calc-cash">$0</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">📊 SPY</span>
+                                <span class="breakdown-value" id="calc-spy">$0 (0 주)</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">💻 QQQ</span>
+                                <span class="breakdown-value" id="calc-qqq">$0 (0 주)</span>
+                            </div>
+                            <div class="breakdown-total">
+                                <span class="breakdown-label">총 투자액</span>
+                                <span class="breakdown-value" id="calc-total">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIX 히스토리 차트 -->
+            <section class="history">
+                <h2>📉 VIX 30일 추이</h2>
+                <div class="chart-container">
+                    <canvas id="vixHistoryChart"></canvas>
+                </div>
+            </section>
+
+            <!-- 전략 설명 -->
+            <section class="strategy-guide">
+                <h2>📚 전략 가이드</h2>
+                <div class="guide-grid">
+                    <div class="guide-card aggressive">
+                        <h3>🚀 공격적 전략</h3>
+                        <p class="guide-condition">VIX &lt; 15</p>
+                        <div class="guide-allocation">
+                            <div>현금: 10%</div>
+                            <div>SPY: 50%</div>
+                            <div>QQQ: 40%</div>
+                        </div>
+                        <p class="guide-desc">낮은 변동성 환경에서 성장주 중심의 공격적 투자</p>
+                    </div>
+
+                    <div class="guide-card balanced">
+                        <h3>⚖️ 균형 전략</h3>
+                        <p class="guide-condition">VIX 15-20</p>
+                        <div class="guide-allocation">
+                            <div>현금: 20%</div>
+                            <div>SPY: 45%</div>
+                            <div>QQQ: 35%</div>
+                        </div>
+                        <p class="guide-desc">정상 변동성 환경에서 균형잡힌 포트폴리오</p>
+                    </div>
+
+                    <div class="guide-card conservative">
+                        <h3>🛡️ 보수적 전략</h3>
+                        <p class="guide-condition">VIX 20-30</p>
+                        <div class="guide-allocation">
+                            <div>현금: 40%</div>
+                            <div>SPY: 40%</div>
+                            <div>QQQ: 20%</div>
+                        </div>
+                        <p class="guide-desc">높은 변동성 환경에서 안전자산 비중 확대</p>
+                    </div>
+
+                    <div class="guide-card very-conservative">
+                        <h3>🏰 매우 보수적 전략</h3>
+                        <p class="guide-condition">VIX &gt; 30</p>
+                        <div class="guide-allocation">
+                            <div>현금: 60%</div>
+                            <div>SPY: 30%</div>
+                            <div>QQQ: 10%</div>
+                        </div>
+                        <p class="guide-desc">극도의 변동성 환경에서 현금 중심의 방어적 운용</p>
+                    </div>
+                </div>
+            </section>
+
+            <button id="refresh-btn" class="btn-refresh">🔄 새로고침</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
