@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Trends 위협 분석기 v1.0.0</title>
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a2235;
+            --bg-card-hover: #1f2a40;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-red: #ef4444;
+            --accent-orange: #f97316;
+            --accent-yellow: #eab308;
+            --accent-green: #22c55e;
+            --accent-purple: #a855f7;
+            --border-color: #1e293b;
+            --threat-critical: #dc2626;
+            --threat-high: #ea580c;
+            --threat-medium: #ca8a04;
+            --threat-low: #16a34a;
+            --threat-info: #2563eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .app-header {
+            text-align: center;
+            padding: 30px 20px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(168,85,247,0.1));
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-cyan));
+        }
+
+        .app-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .app-header .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(59,130,246,0.15);
+            color: var(--accent-blue);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-top: 8px;
+        }
+
+        /* Config Panel */
+        .config-panel {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .config-panel h3 {
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .config-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .config-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--bg-card-hover);
+        }
+
+        .btn-danger {
+            background: rgba(239,68,68,0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: rgba(239,68,68,0.25);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-dot.active { background: var(--accent-green); }
+        .status-dot.loading { background: var(--accent-yellow); animation: pulse 1s infinite; }
+        .status-dot.error { background: var(--accent-red); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Threat Summary */
+        .threat-summary {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .threat-summary {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .threat-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .summary-card .count {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .summary-card .label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .count-critical { color: var(--threat-critical); }
+        .count-high { color: var(--threat-high); }
+        .count-medium { color: var(--threat-medium); }
+        .count-low { color: var(--threat-low); }
+        .count-info { color: var(--threat-info); }
+
+        /* Results Section */
+        .results-section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .filter-tab.active {
+            background: rgba(59,130,246,0.15);
+            color: var(--accent-blue);
+            border-color: rgba(59,130,246,0.3);
+        }
+
+        .filter-tab:hover {
+            background: var(--bg-card-hover);
+        }
+
+        /* Trend Cards */
+        .trend-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .trend-card:hover {
+            border-color: rgba(59,130,246,0.3);
+        }
+
+        .trend-card-header {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            gap: 16px;
+            cursor: pointer;
+        }
+
+        .threat-level-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .badge-critical {
+            background: rgba(220,38,38,0.2);
+            color: var(--threat-critical);
+            border: 1px solid rgba(220,38,38,0.3);
+        }
+        .badge-high {
+            background: rgba(234,88,12,0.2);
+            color: var(--threat-high);
+            border: 1px solid rgba(234,88,12,0.3);
+        }
+        .badge-medium {
+            background: rgba(202,138,4,0.2);
+            color: var(--threat-medium);
+            border: 1px solid rgba(202,138,4,0.3);
+        }
+        .badge-low {
+            background: rgba(22,163,74,0.2);
+            color: var(--threat-low);
+            border: 1px solid rgba(22,163,74,0.3);
+        }
+        .badge-info {
+            background: rgba(37,99,235,0.2);
+            color: var(--threat-info);
+            border: 1px solid rgba(37,99,235,0.3);
+        }
+
+        .trend-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .trend-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .trend-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .trend-traffic {
+            color: var(--accent-cyan);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .expand-icon {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+
+        .trend-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .trend-detail {
+            display: none;
+            padding: 0 20px 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .trend-card.expanded .trend-detail {
+            display: block;
+        }
+
+        .analysis-section {
+            margin-top: 16px;
+        }
+
+        .analysis-section h4 {
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .analysis-content {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .related-articles {
+            margin-top: 12px;
+        }
+
+        .article-link {
+            display: block;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .article-link:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .article-source {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        /* Loading */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10,14,23,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            display: none;
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar-wrapper {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            height: 8px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 8px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            animation: slideIn 0.3s ease-out;
+            max-width: 360px;
+        }
+
+        .toast-success {
+            background: rgba(22,163,74,0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(22,163,74,0.3);
+        }
+
+        .toast-error {
+            background: rgba(239,68,68,0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+
+        .toast-info {
+            background: rgba(59,130,246,0.15);
+            color: var(--accent-blue);
+            border: 1px solid rgba(59,130,246,0.3);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Custom Keywords */
+        .keyword-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .keyword-tag {
+            background: rgba(168,85,247,0.15);
+            color: var(--accent-purple);
+            border: 1px solid rgba(168,85,247,0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .keyword-tag .remove {
+            cursor: pointer;
+            opacity: 0.7;
+            font-weight: bold;
+        }
+
+        .keyword-tag .remove:hover {
+            opacity: 1;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="app-header">
+            <h1>Google Trends 위협 분석기</h1>
+            <p class="subtitle">실시간 Google 트렌드를 수집하고 AI로 보안 위협을 분석합니다</p>
+            <span class="version-badge">v1.0.0</span>
+        </div>
+
+        <!-- Config Panel -->
+        <div class="config-panel">
+            <h3>설정</h3>
+            <div class="config-row">
+                <div class="form-group">
+                    <label>Claude API 키</label>
+                    <input type="password" id="apiKey" placeholder="sk-ant-api03-..." />
+                </div>
+                <div class="form-group">
+                    <label>분석 지역</label>
+                    <select id="region">
+                        <option value="KR">한국 (KR)</option>
+                        <option value="US">미국 (US)</option>
+                        <option value="JP">일본 (JP)</option>
+                        <option value="GB">영국 (GB)</option>
+                        <option value="DE">독일 (DE)</option>
+                        <option value="FR">프랑스 (FR)</option>
+                        <option value="CN">중국 (CN)</option>
+                        <option value="IN">인도 (IN)</option>
+                        <option value="BR">브라질 (BR)</option>
+                        <option value="AU">호주 (AU)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="config-row">
+                <div class="form-group">
+                    <label>위협 키워드 추가 (Enter로 추가)</label>
+                    <input type="text" id="keywordInput" placeholder="예: 랜섬웨어, 해킹, DDoS..." />
+                </div>
+                <div class="form-group">
+                    <label>분석 모델</label>
+                    <select id="model">
+                        <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
+                        <option value="claude-haiku-4-20250414">Claude Haiku 4</option>
+                    </select>
+                </div>
+            </div>
+            <div class="keyword-tags" id="keywordTags"></div>
+            <br>
+            <div class="btn-row">
+                <button class="btn btn-primary" id="btnAnalyze" onclick="startAnalysis()">
+                    트렌드 수집 & 위협 분석
+                </button>
+                <button class="btn btn-secondary" id="btnTrendsOnly" onclick="fetchTrendsOnly()">
+                    트렌드만 수집
+                </button>
+                <button class="btn btn-danger" id="btnClear" onclick="clearResults()">
+                    초기화
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-text">
+                <span id="progressLabel">준비 중...</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar" id="statusBar" style="display: none;">
+            <div class="status-info">
+                <div class="status-item">
+                    <span class="status-dot active" id="statusDot"></span>
+                    <span id="statusText">준비됨</span>
+                </div>
+                <div class="status-item">
+                    트렌드: <strong id="trendCount">0</strong>건
+                </div>
+                <div class="status-item">
+                    분석 완료: <strong id="analyzedCount">0</strong>건
+                </div>
+                <div class="status-item">
+                    마지막 업데이트: <strong id="lastUpdate">-</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Threat Summary -->
+        <div class="threat-summary" id="threatSummary" style="display: none;">
+            <div class="summary-card">
+                <div class="count count-critical" id="criticalCount">0</div>
+                <div class="label">심각</div>
+            </div>
+            <div class="summary-card">
+                <div class="count count-high" id="highCount">0</div>
+                <div class="label">높음</div>
+            </div>
+            <div class="summary-card">
+                <div class="count count-medium" id="mediumCount">0</div>
+                <div class="label">보통</div>
+            </div>
+            <div class="summary-card">
+                <div class="count count-low" id="lowCount">0</div>
+                <div class="label">낮음</div>
+            </div>
+            <div class="summary-card">
+                <div class="count count-info" id="infoCount">0</div>
+                <div class="label">참고</div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="results-section">
+            <div class="section-header" id="resultsHeader" style="display: none;">
+                <h2>분석 결과</h2>
+                <div class="filter-tabs">
+                    <div class="filter-tab active" data-filter="all" onclick="filterResults('all', this)">전체</div>
+                    <div class="filter-tab" data-filter="critical" onclick="filterResults('critical', this)">심각</div>
+                    <div class="filter-tab" data-filter="high" onclick="filterResults('high', this)">높음</div>
+                    <div class="filter-tab" data-filter="medium" onclick="filterResults('medium', this)">보통</div>
+                    <div class="filter-tab" data-filter="low" onclick="filterResults('low', this)">낮음</div>
+                    <div class="filter-tab" data-filter="info" onclick="filterResults('info', this)">참고</div>
+                </div>
+            </div>
+            <div id="resultsContainer">
+                <div class="empty-state">
+                    <div class="icon">&#128270;</div>
+                    <h3>Google Trends 위협 분석을 시작하세요</h3>
+                    <p>Claude API 키를 입력하고 분석 버튼을 클릭하면<br>실시간 트렌드를 수집하고 보안 위협을 분석합니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">분석 중...</div>
+    </div>
+
+    <script>
+        // ===== State =====
+        let allResults = [];
+        let customKeywords = [];
+        const TRENDS_RSS_PROXY = 'https://api.allorigins.win/raw?url=';
+
+        // ===== Init =====
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('claude_api_key');
+            if (savedKey) document.getElementById('apiKey').value = savedKey;
+
+            const savedRegion = localStorage.getItem('trends_region');
+            if (savedRegion) document.getElementById('region').value = savedRegion;
+
+            const savedModel = localStorage.getItem('analysis_model');
+            if (savedModel) document.getElementById('model').value = savedModel;
+
+            const savedKeywords = localStorage.getItem('custom_keywords');
+            if (savedKeywords) {
+                customKeywords = JSON.parse(savedKeywords);
+                renderKeywordTags();
+            }
+
+            document.getElementById('keywordInput').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const val = e.target.value.trim();
+                    if (val && !customKeywords.includes(val)) {
+                        customKeywords.push(val);
+                        localStorage.setItem('custom_keywords', JSON.stringify(customKeywords));
+                        renderKeywordTags();
+                    }
+                    e.target.value = '';
+                }
+            });
+        });
+
+        // ===== Keywords =====
+        function renderKeywordTags() {
+            const container = document.getElementById('keywordTags');
+            container.innerHTML = customKeywords.map((kw, i) =>
+                `<span class="keyword-tag">${kw}<span class="remove" onclick="removeKeyword(${i})">x</span></span>`
+            ).join('');
+        }
+
+        function removeKeyword(index) {
+            customKeywords.splice(index, 1);
+            localStorage.setItem('custom_keywords', JSON.stringify(customKeywords));
+            renderKeywordTags();
+        }
+
+        // ===== Toast =====
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // ===== Progress =====
+        function showProgress(label, percent) {
+            const container = document.getElementById('progressContainer');
+            container.classList.add('active');
+            document.getElementById('progressLabel').textContent = label;
+            document.getElementById('progressPercent').textContent = `${Math.round(percent)}%`;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+        }
+
+        function hideProgress() {
+            document.getElementById('progressContainer').classList.remove('active');
+        }
+
+        // ===== Save Settings =====
+        function saveSettings() {
+            const apiKey = document.getElementById('apiKey').value;
+            const region = document.getElementById('region').value;
+            const model = document.getElementById('model').value;
+            if (apiKey) localStorage.setItem('claude_api_key', apiKey);
+            localStorage.setItem('trends_region', region);
+            localStorage.setItem('analysis_model', model);
+        }
+
+        // ===== Fetch Google Trends =====
+        async function fetchGoogleTrends() {
+            const region = document.getElementById('region').value;
+            const rssUrl = `https://trends.google.com/trending/rss?geo=${region}`;
+            const proxyUrl = `${TRENDS_RSS_PROXY}${encodeURIComponent(rssUrl)}`;
+
+            const response = await fetch(proxyUrl);
+            if (!response.ok) throw new Error(`트렌드 데이터를 가져올 수 없습니다 (${response.status})`);
+
+            const xmlText = await response.text();
+            return parseTrendsRSS(xmlText);
+        }
+
+        function parseTrendsRSS(xmlText) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(xmlText, 'text/xml');
+            const items = doc.querySelectorAll('item');
+            const trends = [];
+
+            items.forEach(item => {
+                const title = item.querySelector('title')?.textContent || '';
+                const traffic = item.querySelector('ht\\:approx_traffic, approx_traffic')?.textContent || '';
+                const description = item.querySelector('description')?.textContent || '';
+                const link = item.querySelector('link')?.textContent || '';
+                const pubDate = item.querySelector('pubDate')?.textContent || '';
+
+                const newsItems = item.querySelectorAll('ht\\:news_item, news_item');
+                const articles = [];
+                newsItems.forEach(ni => {
+                    const newsTitle = ni.querySelector('ht\\:news_item_title, news_item_title')?.textContent || '';
+                    const newsUrl = ni.querySelector('ht\\:news_item_url, news_item_url')?.textContent || '';
+                    const newsSource = ni.querySelector('ht\\:news_item_source, news_item_source')?.textContent || '';
+                    if (newsTitle) articles.push({ title: newsTitle, url: newsUrl, source: newsSource });
+                });
+
+                trends.push({ title, traffic, description, link, pubDate, articles });
+            });
+
+            return trends;
+        }
+
+        // ===== Claude AI Analysis =====
+        async function analyzeThreat(apiKey, model, trend, customKeywords) {
+            const keywordsContext = customKeywords.length > 0
+                ? `\n사용자 관심 위협 키워드: ${customKeywords.join(', ')}`
+                : '';
+
+            const prompt = `다음 Google 트렌드 항목을 보안 위협 관점에서 분석해주세요.
+
+트렌드 제목: ${trend.title}
+검색량: ${trend.traffic}
+설명: ${trend.description}
+관련 기사: ${trend.articles.map(a => a.title).join(', ')}${keywordsContext}
+
+다음 형식으로 분석 결과를 JSON으로 반환해주세요 (JSON만 반환, 다른 텍스트 없이):
+{
+  "threat_level": "critical|high|medium|low|info",
+  "category": "위협 카테고리 (예: 사이버공격, 자연재해, 사회불안, 경제위기, 기술장애, 보건위기, 테러, 정보유출, 일반뉴스 등)",
+  "summary": "1-2문장의 위협 요약",
+  "detail": "3-5문장의 상세 위협 분석. 왜 이것이 위협인지, 어떤 영향이 예상되는지, 어떤 대응이 필요한지 설명",
+  "risk_factors": ["위험 요소 1", "위험 요소 2", "위험 요소 3"],
+  "affected_sectors": ["영향 받는 분야 1", "영향 받는 분야 2"]
+}
+
+위협 수준 기준:
+- critical: 즉각적이고 광범위한 피해가 예상되는 심각한 보안 위협
+- high: 상당한 피해 가능성이 있는 높은 수준의 위협
+- medium: 일정 수준의 주의가 필요한 보통 위협
+- low: 경미하지만 모니터링이 필요한 낮은 위협
+- info: 직접적 위협은 아니지만 보안 관점에서 참고할 정보`;
+
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': apiKey,
+                    'anthropic-version': '2023-06-01',
+                    'anthropic-dangerous-direct-browser-access': 'true'
+                },
+                body: JSON.stringify({
+                    model: model,
+                    max_tokens: 1024,
+                    messages: [{ role: 'user', content: prompt }]
+                })
+            });
+
+            if (!response.ok) {
+                const err = await response.text();
+                throw new Error(`Claude API 오류: ${response.status} - ${err}`);
+            }
+
+            const data = await response.json();
+            const text = data.content[0].text;
+
+            try {
+                const jsonMatch = text.match(/\{[\s\S]*\}/);
+                if (jsonMatch) return JSON.parse(jsonMatch[0]);
+            } catch (e) {
+                console.error('JSON 파싱 실패:', text);
+            }
+
+            return {
+                threat_level: 'info',
+                category: '분석 불가',
+                summary: text.substring(0, 200),
+                detail: text,
+                risk_factors: [],
+                affected_sectors: []
+            };
+        }
+
+        // ===== Main: Fetch Trends Only =====
+        async function fetchTrendsOnly() {
+            saveSettings();
+            try {
+                showProgress('Google Trends 데이터 수집 중...', 30);
+                const trends = await fetchGoogleTrends();
+                showProgress('트렌드 데이터 처리 중...', 80);
+
+                allResults = trends.map(t => ({
+                    ...t,
+                    analysis: {
+                        threat_level: 'info',
+                        category: '미분석',
+                        summary: '아직 AI 위협 분석이 수행되지 않았습니다.',
+                        detail: '위협 분석을 실행하려면 Claude API 키를 입력하고 "트렌드 수집 & 위협 분석" 버튼을 클릭하세요.',
+                        risk_factors: [],
+                        affected_sectors: []
+                    }
+                }));
+
+                showProgress('완료!', 100);
+                setTimeout(hideProgress, 500);
+
+                renderResults();
+                showToast(`${trends.length}개의 트렌드를 수집했습니다.`, 'success');
+            } catch (err) {
+                hideProgress();
+                showToast(`오류: ${err.message}`, 'error');
+                console.error(err);
+            }
+        }
+
+        // ===== Main: Full Analysis =====
+        async function startAnalysis() {
+            saveSettings();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const model = document.getElementById('model').value;
+
+            if (!apiKey) {
+                showToast('Claude API 키를 입력해주세요.', 'error');
+                return;
+            }
+
+            const btnAnalyze = document.getElementById('btnAnalyze');
+            const btnTrends = document.getElementById('btnTrendsOnly');
+            btnAnalyze.disabled = true;
+            btnTrends.disabled = true;
+
+            try {
+                // Step 1: Fetch trends
+                showProgress('Google Trends 데이터 수집 중...', 10);
+                const trends = await fetchGoogleTrends();
+                showToast(`${trends.length}개의 트렌드를 발견했습니다.`, 'info');
+
+                // Step 2: Analyze each trend
+                allResults = [];
+                const total = trends.length;
+
+                for (let i = 0; i < total; i++) {
+                    const percent = 15 + ((i / total) * 80);
+                    showProgress(`위협 분석 중... (${i + 1}/${total}) "${trends[i].title}"`, percent);
+
+                    try {
+                        const analysis = await analyzeThreat(apiKey, model, trends[i], customKeywords);
+                        allResults.push({ ...trends[i], analysis });
+                    } catch (err) {
+                        console.error(`분석 실패 (${trends[i].title}):`, err);
+                        allResults.push({
+                            ...trends[i],
+                            analysis: {
+                                threat_level: 'info',
+                                category: '분석 실패',
+                                summary: `분석 중 오류 발생: ${err.message}`,
+                                detail: err.message,
+                                risk_factors: [],
+                                affected_sectors: []
+                            }
+                        });
+                    }
+                }
+
+                // Sort by threat level
+                const levelOrder = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
+                allResults.sort((a, b) => (levelOrder[a.analysis.threat_level] || 4) - (levelOrder[b.analysis.threat_level] || 4));
+
+                showProgress('분석 완료!', 100);
+                setTimeout(hideProgress, 800);
+
+                renderResults();
+                showToast('위협 분석이 완료되었습니다!', 'success');
+
+            } catch (err) {
+                hideProgress();
+                showToast(`오류: ${err.message}`, 'error');
+                console.error(err);
+            } finally {
+                btnAnalyze.disabled = false;
+                btnTrends.disabled = false;
+            }
+        }
+
+        // ===== Render Results =====
+        function renderResults() {
+            const container = document.getElementById('resultsContainer');
+            const statusBar = document.getElementById('statusBar');
+            const summary = document.getElementById('threatSummary');
+            const header = document.getElementById('resultsHeader');
+
+            if (allResults.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="icon">&#128270;</div><h3>결과가 없습니다</h3></div>';
+                statusBar.style.display = 'none';
+                summary.style.display = 'none';
+                header.style.display = 'none';
+                return;
+            }
+
+            // Show UI elements
+            statusBar.style.display = 'flex';
+            summary.style.display = 'grid';
+            header.style.display = 'flex';
+
+            // Update status
+            document.getElementById('trendCount').textContent = allResults.length;
+            document.getElementById('analyzedCount').textContent = allResults.filter(r => r.analysis.category !== '미분석').length;
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('ko-KR');
+
+            // Update summary counts
+            const counts = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
+            allResults.forEach(r => {
+                const level = r.analysis.threat_level;
+                if (counts[level] !== undefined) counts[level]++;
+            });
+            document.getElementById('criticalCount').textContent = counts.critical;
+            document.getElementById('highCount').textContent = counts.high;
+            document.getElementById('mediumCount').textContent = counts.medium;
+            document.getElementById('lowCount').textContent = counts.low;
+            document.getElementById('infoCount').textContent = counts.info;
+
+            // Render cards
+            renderCards(allResults);
+        }
+
+        function renderCards(results) {
+            const container = document.getElementById('resultsContainer');
+
+            if (results.length === 0) {
+                container.innerHTML = '<div class="empty-state"><h3>해당 필터에 맞는 결과가 없습니다</h3></div>';
+                return;
+            }
+
+            container.innerHTML = results.map((r, i) => {
+                const a = r.analysis;
+                const levelLabel = { critical: '심각', high: '높음', medium: '보통', low: '낮음', info: '참고' };
+
+                const articlesHtml = r.articles.map(art =>
+                    `<a href="${art.url}" target="_blank" rel="noopener" class="article-link">
+                        ${art.title}
+                        <span class="article-source">${art.source}</span>
+                    </a>`
+                ).join('');
+
+                const riskFactorsHtml = a.risk_factors && a.risk_factors.length > 0
+                    ? `<div class="analysis-section">
+                        <h4>위험 요소</h4>
+                        <div class="analysis-content">${a.risk_factors.map(rf => `• ${rf}`).join('\n')}</div>
+                    </div>` : '';
+
+                const sectorsHtml = a.affected_sectors && a.affected_sectors.length > 0
+                    ? `<div class="analysis-section">
+                        <h4>영향 분야</h4>
+                        <div class="analysis-content">${a.affected_sectors.join(', ')}</div>
+                    </div>` : '';
+
+                return `
+                <div class="trend-card" data-level="${a.threat_level}" id="card-${i}">
+                    <div class="trend-card-header" onclick="toggleCard(${i})">
+                        <span class="threat-level-badge badge-${a.threat_level}">${levelLabel[a.threat_level] || '참고'}</span>
+                        <div class="trend-info">
+                            <div class="trend-title">${r.title}</div>
+                            <div class="trend-meta">
+                                <span class="trend-traffic">${r.traffic || 'N/A'}</span>
+                                <span>${a.category}</span>
+                                <span>${r.pubDate ? new Date(r.pubDate).toLocaleDateString('ko-KR') : ''}</span>
+                            </div>
+                        </div>
+                        <span class="expand-icon">&#9660;</span>
+                    </div>
+                    <div class="trend-detail">
+                        <div class="analysis-section">
+                            <h4>위협 요약</h4>
+                            <div class="analysis-content">${a.summary}</div>
+                        </div>
+                        <div class="analysis-section">
+                            <h4>상세 분석</h4>
+                            <div class="analysis-content">${a.detail}</div>
+                        </div>
+                        ${riskFactorsHtml}
+                        ${sectorsHtml}
+                        ${articlesHtml ? `<div class="analysis-section related-articles"><h4>관련 기사</h4>${articlesHtml}</div>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ===== Toggle Card =====
+        function toggleCard(index) {
+            const card = document.getElementById(`card-${index}`);
+            card.classList.toggle('expanded');
+        }
+
+        // ===== Filter =====
+        function filterResults(level, tabEl) {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            tabEl.classList.add('active');
+
+            if (level === 'all') {
+                renderCards(allResults);
+            } else {
+                renderCards(allResults.filter(r => r.analysis.threat_level === level));
+            }
+        }
+
+        // ===== Clear =====
+        function clearResults() {
+            allResults = [];
+            renderResults();
+            showToast('결과가 초기화되었습니다.', 'info');
+        }
+    </script>
+</body>
+</html>
