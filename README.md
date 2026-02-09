@@ -7,28 +7,15 @@
 
 ---
 
-## 📥 다운로드 및 실행
+## 📥 다운로드
 
-### Windows (.exe) 만들기
+### Windows .exe (바로 실행)
 
-Python이 설치된 Windows PC에서 아래 명령어를 실행하면 `.exe` 파일이 생성됩니다.
+> **[⬇ GrayToWhite.exe 다운로드](https://github.com/roy-so-chae/Test/releases/latest/download/GrayToWhite.exe)**
+>
+> 설치 없이 더블클릭만으로 바로 사용할 수 있습니다.
 
-```bash
-# 1. 저장소 클론
-git clone https://github.com/roy-so-chae/Test.git
-cd Test/image-analyzer-webapp
-
-# 2. 필요 패키지 설치
-pip install Pillow numpy scipy pyinstaller
-
-# 3. .exe 빌드
-pyinstaller --onefile --windowed --name "GrayToWhite" gray_to_white.py
-
-# 4. 실행파일 위치
-# dist/GrayToWhite.exe 를 더블클릭하여 실행
-```
-
-### Python으로 바로 실행 (Windows / Mac / Linux)
+### Python으로 직접 실행 (Windows / Mac / Linux)
 
 ```bash
 git clone https://github.com/roy-so-chae/Test.git
@@ -37,7 +24,7 @@ pip install Pillow numpy scipy
 python gray_to_white.py
 ```
 
-### 웹 버전 (설치 없이 브라우저에서 사용)
+### 웹 버전 (브라우저에서 사용)
 
 | 방법 | 링크 |
 |------|------|

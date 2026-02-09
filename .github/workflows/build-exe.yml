@@ -1,0 +1,58 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches:
+      - main
+      - 'claude/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install Pillow numpy scipy pyinstaller
+
+      - name: Build EXE
+        run: |
+          cd image-analyzer-webapp
+          pyinstaller --onefile --windowed --name "GrayToWhite" gray_to_white.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrayToWhite-Windows
+          path: image-analyzer-webapp/dist/GrayToWhite.exe
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          name: "배경 회색→흰색 변환기 v1.0.0"
+          body: |
+            ## 📥 다운로드
+
+            아래 **GrayToWhite.exe** 파일을 다운로드하여 바로 실행하세요.
+            별도 설치 없이 더블클릭만으로 사용 가능합니다.
+
+            ### 주요 기능
+            - 이미지 가장자리에서 연결된 회색 배경만 흰색으로 변환 (Flood-fill)
+            - 바닥 음영(3D 그림자) 자동 처리
+            - 밝기/채도/경계 부드러움 슬라이더 조절
+            - 파일/폴더 일괄 처리
+            - PNG / JPG / WebP 저장
+          files: image-analyzer-webapp/dist/GrayToWhite.exe
+          make_latest: true
