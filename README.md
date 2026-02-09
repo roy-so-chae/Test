@@ -10,8 +10,8 @@
 
 | 방법 | 링크 |
 |------|------|
-| **파일 직접 다운로드** | [⬇ gray-to-white.html 다운로드](https://raw.githubusercontent.com/roy-so-chae/Test/main/image-analyzer-webapp/gray-to-white.html) (우클릭 → 다른 이름으로 저장) |
-| **ZIP 전체 다운로드** | [⬇ ZIP 다운로드](https://github.com/roy-so-chae/Test/archive/refs/heads/main.zip) |
+| **파일 직접 다운로드** | [⬇ gray-to-white.html 다운로드](https://github.com/roy-so-chae/Test/raw/claude/gray-to-white-background-az1yC/image-analyzer-webapp/gray-to-white.html) (우클릭 → 다른 이름으로 저장) |
+| **ZIP 전체 다운로드** | [⬇ ZIP 다운로드](https://github.com/roy-so-chae/Test/archive/refs/heads/claude/gray-to-white-background-az1yC.zip) |
 | **Git Clone** | 아래 명령어 참고 |
 
 ```bash
