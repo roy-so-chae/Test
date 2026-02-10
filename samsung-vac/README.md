@@ -2,40 +2,39 @@
 
 Galaxy S25에 최적화된 Samsung TV Vision AI Companion 서비스 소개 모바일 웹앱입니다.
 
-## 바로 실행 / 다운로드
+## 데모 앱 다운로드
+
+`index.html` 단일 파일이 Vision AI Companion 데모 앱 전체입니다. 다운로드 후 브라우저에서 바로 실행할 수 있습니다.
+
+### 데모 앱 바로 다운로드
+
+> **[index.html 데모 앱 다운로드](https://raw.githubusercontent.com/roy-so-chae/Test/claude/samsung-vac-mobile-page-BDk20/samsung-vac/index.html)**
+>
+> 위 링크 클릭 → `Ctrl+S` (PC) 또는 `공유 → 저장` (모바일)으로 저장한 뒤 브라우저에서 열어주세요.
 
 | | 링크 |
 |---|---|
-| **바로 보기 (GitHub Pages)** | [https://roy-so-chae.github.io/Test/samsung-vac/](https://roy-so-chae.github.io/Test/samsung-vac/) |
-| **index.html 다운로드** | [index.html 다운로드](./index.html) — 페이지에서 `우클릭 → 다른 이름으로 저장` |
-| **전체 파일 ZIP 다운로드** | [전체 레포 ZIP 다운로드](https://github.com/roy-so-chae/Test/archive/refs/heads/main.zip) |
+| **데모 앱 다운로드 (index.html)** | [index.html](https://raw.githubusercontent.com/roy-so-chae/Test/claude/samsung-vac-mobile-page-BDk20/samsung-vac/index.html) |
+| **전체 파일 ZIP 다운로드** | [ZIP 다운로드](https://github.com/roy-so-chae/Test/archive/refs/heads/claude/samsung-vac-mobile-page-BDk20.zip) |
+| **GitHub Pages에서 바로 보기** | [https://roy-so-chae.github.io/Test/samsung-vac/](https://roy-so-chae.github.io/Test/samsung-vac/) |
 
-> **Galaxy S25에서 바로 확인하기**: 위 "바로 보기" 링크를 Galaxy S25 브라우저에서 열어보세요. 홈 화면에 추가하면 앱처럼 사용할 수 있습니다.
+### PWA 전체 파일 (오프라인 지원 시 필요)
 
-### 개별 파일 다운로드
+| 파일 | 설명 | 다운로드 |
+|------|------|----------|
+| **index.html** | 데모 앱 본체 | [다운로드](https://raw.githubusercontent.com/roy-so-chae/Test/claude/samsung-vac-mobile-page-BDk20/samsung-vac/index.html) |
+| **manifest.json** | PWA 설정 | [다운로드](https://raw.githubusercontent.com/roy-so-chae/Test/claude/samsung-vac-mobile-page-BDk20/samsung-vac/manifest.json) |
+| **sw.js** | Service Worker | [다운로드](https://raw.githubusercontent.com/roy-so-chae/Test/claude/samsung-vac-mobile-page-BDk20/samsung-vac/sw.js) |
 
-각 파일을 클릭하면 GitHub에서 확인 후 다운로드할 수 있습니다.
-
-| 파일 | 상대 링크 | 직접 다운로드 (main 머지 후) |
-|------|-----------|------------------------------|
-| **index.html** | [index.html](./index.html) | [raw 다운로드](https://raw.githubusercontent.com/roy-so-chae/Test/main/samsung-vac/index.html) |
-| **manifest.json** | [manifest.json](./manifest.json) | [raw 다운로드](https://raw.githubusercontent.com/roy-so-chae/Test/main/samsung-vac/manifest.json) |
-| **sw.js** | [sw.js](./sw.js) | [raw 다운로드](https://raw.githubusercontent.com/roy-so-chae/Test/main/samsung-vac/sw.js) |
-
-> **참고**: "직접 다운로드" 링크는 `main` 브랜치에 머지된 후 동작합니다. 머지 전에는 **상대 링크**를 사용하세요.
+> `index.html` 하나만 다운로드해도 데모 앱은 완전히 동작합니다. PWA(홈 화면 추가, 오프라인) 기능이 필요한 경우에만 3개 파일을 모두 같은 폴더에 저장하세요.
 
 ### Git Clone
 
 ```bash
-git clone https://github.com/roy-so-chae/Test.git
+git clone -b claude/samsung-vac-mobile-page-BDk20 https://github.com/roy-so-chae/Test.git
 cd Test/samsung-vac
-# index.html을 브라우저에서 열면 바로 실행됩니다
+open index.html   # macOS / xdg-open index.html (Linux)
 ```
-
-> **특정 브랜치에서 클론**하려면:
-> ```bash
-> git clone -b claude/samsung-vac-mobile-page-BDk20 https://github.com/roy-so-chae/Test.git
-> ```
 
 ---
 
