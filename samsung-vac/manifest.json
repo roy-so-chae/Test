@@ -1,12 +1,12 @@
 {
-  "name": "Samsung VAC - Virtual AI Companion",
-  "short_name": "Samsung VAC",
-  "description": "Galaxy S25와 함께하는 차세대 AI 동반자 서비스",
+  "name": "Samsung Vision AI Companion",
+  "short_name": "Vision AI",
+  "description": "Samsung TV Vision AI Companion - TV가 당신을 이해하는 시대. 멀티 AI 에이전트 서비스 소개 페이지.",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0a0a0a",
-  "theme_color": "#0a0a0a",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "lang": "ko",
   "icons": [
     {
@@ -22,7 +22,6 @@
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [],
-  "categories": ["utilities", "productivity"],
+  "categories": ["entertainment", "utilities"],
   "prefer_related_applications": false
 }
