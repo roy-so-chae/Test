@@ -2,6 +2,35 @@
 
 Galaxy S25에 최적화된 Samsung TV Vision AI Companion 서비스 소개 모바일 웹앱입니다.
 
+## 바로 실행 / 다운로드
+
+| | 링크 |
+|---|---|
+| **바로 보기 (GitHub Pages)** | [https://roy-so-chae.github.io/Test/samsung-vac/](https://roy-so-chae.github.io/Test/samsung-vac/) |
+| **index.html 다운로드** | [index.html 다운로드](https://github.com/roy-so-chae/Test/raw/main/samsung-vac/index.html) |
+| **전체 파일 ZIP 다운로드** | [samsung-vac.zip (전체)](https://github.com/roy-so-chae/Test/archive/refs/heads/main.zip) |
+
+> **Galaxy S25에서 바로 확인하기**: 위 "바로 보기" 링크를 Galaxy S25 브라우저에서 열어보세요. 홈 화면에 추가하면 앱처럼 사용할 수 있습니다.
+
+### 개별 파일 다운로드
+
+```
+samsung-vac/
+├── index.html      → https://github.com/roy-so-chae/Test/raw/main/samsung-vac/index.html
+├── manifest.json   → https://github.com/roy-so-chae/Test/raw/main/samsung-vac/manifest.json
+└── sw.js           → https://github.com/roy-so-chae/Test/raw/main/samsung-vac/sw.js
+```
+
+### Git Clone
+
+```bash
+git clone https://github.com/roy-so-chae/Test.git
+cd Test/samsung-vac
+# index.html을 브라우저에서 열면 바로 실행됩니다
+```
+
+---
+
 ## 미리보기
 
 > "TV가 당신을 이해합니다"
