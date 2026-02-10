@@ -7,19 +7,22 @@ Galaxy S25에 최적화된 Samsung TV Vision AI Companion 서비스 소개 모�
 | | 링크 |
 |---|---|
 | **바로 보기 (GitHub Pages)** | [https://roy-so-chae.github.io/Test/samsung-vac/](https://roy-so-chae.github.io/Test/samsung-vac/) |
-| **index.html 다운로드** | [index.html 다운로드](https://github.com/roy-so-chae/Test/raw/main/samsung-vac/index.html) |
-| **전체 파일 ZIP 다운로드** | [samsung-vac.zip (전체)](https://github.com/roy-so-chae/Test/archive/refs/heads/main.zip) |
+| **index.html 다운로드** | [index.html 다운로드](./index.html) — 페이지에서 `우클릭 → 다른 이름으로 저장` |
+| **전체 파일 ZIP 다운로드** | [전체 레포 ZIP 다운로드](https://github.com/roy-so-chae/Test/archive/refs/heads/main.zip) |
 
 > **Galaxy S25에서 바로 확인하기**: 위 "바로 보기" 링크를 Galaxy S25 브라우저에서 열어보세요. 홈 화면에 추가하면 앱처럼 사용할 수 있습니다.
 
 ### 개별 파일 다운로드
 
-```
-samsung-vac/
-├── index.html      → https://github.com/roy-so-chae/Test/raw/main/samsung-vac/index.html
-├── manifest.json   → https://github.com/roy-so-chae/Test/raw/main/samsung-vac/manifest.json
-└── sw.js           → https://github.com/roy-so-chae/Test/raw/main/samsung-vac/sw.js
-```
+각 파일을 클릭하면 GitHub에서 확인 후 다운로드할 수 있습니다.
+
+| 파일 | 상대 링크 | 직접 다운로드 (main 머지 후) |
+|------|-----------|------------------------------|
+| **index.html** | [index.html](./index.html) | [raw 다운로드](https://raw.githubusercontent.com/roy-so-chae/Test/main/samsung-vac/index.html) |
+| **manifest.json** | [manifest.json](./manifest.json) | [raw 다운로드](https://raw.githubusercontent.com/roy-so-chae/Test/main/samsung-vac/manifest.json) |
+| **sw.js** | [sw.js](./sw.js) | [raw 다운로드](https://raw.githubusercontent.com/roy-so-chae/Test/main/samsung-vac/sw.js) |
+
+> **참고**: "직접 다운로드" 링크는 `main` 브랜치에 머지된 후 동작합니다. 머지 전에는 **상대 링크**를 사용하세요.
 
 ### Git Clone
 
@@ -28,6 +31,11 @@ git clone https://github.com/roy-so-chae/Test.git
 cd Test/samsung-vac
 # index.html을 브라우저에서 열면 바로 실행됩니다
 ```
+
+> **특정 브랜치에서 클론**하려면:
+> ```bash
+> git clone -b claude/samsung-vac-mobile-page-BDk20 https://github.com/roy-so-chae/Test.git
+> ```
 
 ---
 
