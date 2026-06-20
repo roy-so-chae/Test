@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기사검색기 - 다운로드</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #4285f4;
+            --accent-hover: #3367d6;
+            --border: #e2e8f0;
+            --green: #22c55e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        h1 span:nth-child(1) { color: #4285f4; }
+        h1 span:nth-child(2) { color: #ea4335; }
+        h1 span:nth-child(3) { color: #fbbc04; }
+        h1 span:nth-child(4) { color: #34a853; }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h2 .icon {
+            font-size: 1.5rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .feature {
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 10px;
+        }
+
+        .feature h3 {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .feature p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(66,133,244,0.25);
+        }
+
+        .btn-secondary {
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg);
+        }
+
+        .btn-success {
+            background: var(--green);
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+            transform: translateY(-1px);
+        }
+
+        .preview {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .preview iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+
+        .preview-header {
+            background: var(--bg);
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .preview-dot.red { background: #ef4444; }
+        .preview-dot.yellow { background: #eab308; }
+        .preview-dot.green { background: #22c55e; }
+
+        .regions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .region-tag {
+            background: var(--bg);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.6rem; }
+            .card { padding: 20px; }
+            .btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>기사검색기</h1>
+            <p>실시간 인기 검색어와 관련 기사를 한눈에 확인하세요</p>
+            <span class="badge">v1.0.0</span>
+        </header>
+
+        <!-- Download -->
+        <div class="card">
+            <h2><span class="icon">&#128229;</span> 다운로드</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                단일 HTML 파일로 구성되어 있어 다운로드 후 바로 사용할 수 있습니다. API 키나 설치 과정이 필요 없습니다.
+            </p>
+            <div class="btn-group">
+                <a href="google-trends-threat-webapp/index.html" download="기사검색기.html" class="btn btn-success">
+                    &#11015; 웹앱 다운로드
+                </a>
+                <a href="google-trends-threat-webapp/index.html" target="_blank" class="btn btn-primary">
+                    &#128065; 바로 실행하기
+                </a>
+                <a href="https://github.com/roy-so-chae/Test" target="_blank" class="btn btn-secondary">
+                    &#128187; GitHub
+                </a>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="card">
+            <h2><span class="icon">&#10024;</span> 주요 기능</h2>
+            <div class="features">
+                <div class="feature">
+                    <h3>실시간 트렌드</h3>
+                    <p>Google Trends에서 실시간 인기 검색어를 수집합니다</p>
+                </div>
+                <div class="feature">
+                    <h3>15개 지역 지원</h3>
+                    <p>한국, 미국, 일본 등 주요 국가의 트렌드를 확인</p>
+                </div>
+                <div class="feature">
+                    <h3>관련 뉴스</h3>
+                    <p>각 트렌드의 관련 뉴스 기사와 썸네일 표시</p>
+                </div>
+                <div class="feature">
+                    <h3>검색량 표시</h3>
+                    <p>각 키워드의 대략적인 검색량 확인 가능</p>
+                </div>
+                <div class="feature">
+                    <h3>설치 불필요</h3>
+                    <p>브라우저에서 HTML 파일만 열면 바로 사용</p>
+                </div>
+                <div class="feature">
+                    <h3>완전 무료</h3>
+                    <p>API 키 없이 무료로 사용 가능</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Regions -->
+        <div class="card">
+            <h2><span class="icon">&#127760;</span> 지원 지역</h2>
+            <div class="regions">
+                <span class="region-tag">한국</span>
+                <span class="region-tag">미국</span>
+                <span class="region-tag">일본</span>
+                <span class="region-tag">영국</span>
+                <span class="region-tag">독일</span>
+                <span class="region-tag">프랑스</span>
+                <span class="region-tag">인도</span>
+                <span class="region-tag">브라질</span>
+                <span class="region-tag">호주</span>
+                <span class="region-tag">캐나다</span>
+                <span class="region-tag">대만</span>
+                <span class="region-tag">이탈리아</span>
+                <span class="region-tag">스페인</span>
+                <span class="region-tag">멕시코</span>
+                <span class="region-tag">러시아</span>
+            </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="card">
+            <h2><span class="icon">&#128248;</span> 미리보기</h2>
+            <div class="preview">
+                <div class="preview-header">
+                    <span class="preview-dot red"></span>
+                    <span class="preview-dot yellow"></span>
+                    <span class="preview-dot green"></span>
+                </div>
+                <iframe src="google-trends-threat-webapp/index.html" title="Preview"></iframe>
+            </div>
+        </div>
+
+        <!-- Usage -->
+        <div class="card">
+            <h2><span class="icon">&#128214;</span> 사용 방법</h2>
+            <ol style="padding-left: 20px; color: var(--text-secondary);">
+                <li style="margin-bottom: 8px;">위 다운로드 버튼을 클릭하여 HTML 파일을 저장합니다</li>
+                <li style="margin-bottom: 8px;">다운로드한 파일을 브라우저에서 엽니다</li>
+                <li style="margin-bottom: 8px;">드롭다운에서 원하는 지역을 선택합니다</li>
+                <li style="margin-bottom: 8px;"><strong>검색</strong> 버튼을 클릭합니다</li>
+                <li>인기 검색어를 클릭하면 관련 뉴스를 볼 수 있습니다</li>
+            </ol>
+        </div>
+    </div>
+
+    <footer>
+        <p>
+            MIT License &middot;
+            <a href="https://github.com/roy-so-chae/Test">GitHub</a> &middot;
+            Made with Claude
+        </p>
+    </footer>
+</body>
+</html>

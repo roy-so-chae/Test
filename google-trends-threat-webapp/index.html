@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기사검색기 v1.0.0</title>
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent: #4285f4;
+            --accent-hover: #3367d6;
+            --accent-light: #e8f0fe;
+            --border: #e2e8f0;
+            --red: #ea4335;
+            --yellow: #fbbc04;
+            --green: #34a853;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .app {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 40px 20px 32px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 6px;
+        }
+
+        header h1 span:nth-child(1) { color: #4285f4; }
+        header h1 span:nth-child(2) { color: #ea4335; }
+        header h1 span:nth-child(3) { color: #fbbc04; }
+        header h1 span:nth-child(4) { color: #34a853; }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Search Area */
+        .search-area {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .search-row select {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            min-width: 140px;
+        }
+
+        .search-row select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .btn {
+            padding: 10px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+            box-shadow: 0 2px 8px rgba(66,133,244,0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            background: var(--accent-light);
+        }
+
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .search-options {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-options label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active { display: block; }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Info Bar */
+        .info-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .info-bar.active { display: flex; }
+
+        /* Trend List */
+        .trend-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .trend-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: box-shadow 0.15s;
+        }
+
+        .trend-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .trend-header {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            gap: 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .trend-rank {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            min-width: 32px;
+            text-align: center;
+        }
+
+        .trend-rank.top3 { color: var(--accent); }
+
+        .trend-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .trend-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .trend-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .trend-traffic {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .arrow {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+        }
+
+        .trend-card.open .arrow { transform: rotate(180deg); }
+
+        /* Detail */
+        .trend-detail {
+            display: none;
+            padding: 0 20px 20px;
+            padding-left: 68px;
+        }
+
+        .trend-card.open .trend-detail { display: block; }
+
+        .trend-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .news-item {
+            display: flex;
+            gap: 12px;
+            padding: 10px 14px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.15s;
+            align-items: flex-start;
+        }
+
+        .news-item:hover { background: var(--accent-light); }
+
+        .news-img {
+            width: 72px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+            background: var(--border);
+        }
+
+        .news-content { flex: 1; min-width: 0; }
+
+        .news-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            line-height: 1.4;
+            margin-bottom: 2px;
+        }
+
+        .news-source {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .google-link {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .google-link:hover { text-decoration: underline; }
+
+        /* Empty */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+        .empty-state p { font-size: 0.95rem; }
+
+        /* Toast */
+        .toast-box {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            animation: slideIn 0.25s ease-out;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .toast-error { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
+        .toast-success { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
+        .toast-info { background: #eff6ff; color: var(--accent); border: 1px solid #bfdbfe; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.5rem; }
+            .search-row { flex-direction: column; }
+            .search-row select { min-width: auto; }
+            .trend-detail { padding-left: 20px; }
+            .trend-header { gap: 10px; padding: 12px 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header>
+            <h1>기사검색기</h1>
+            <p>실시간 인기 검색어와 관련 기사를 한눈에 확인하세요</p>
+        </header>
+
+        <!-- Search -->
+        <div class="search-area">
+            <div class="search-row">
+                <select id="region">
+                    <option value="KR">한국</option>
+                    <option value="US">미국</option>
+                    <option value="JP">일본</option>
+                    <option value="GB">영국</option>
+                    <option value="DE">독일</option>
+                    <option value="FR">프랑스</option>
+                    <option value="IN">인도</option>
+                    <option value="BR">브라질</option>
+                    <option value="AU">호주</option>
+                    <option value="CA">캐나다</option>
+                    <option value="TW">대만</option>
+                    <option value="IT">이탈리아</option>
+                    <option value="ES">스페인</option>
+                    <option value="MX">멕시코</option>
+                    <option value="RU">러시아</option>
+                </select>
+                <button class="btn btn-primary" id="btnFetch" onclick="fetchTrends()">검색</button>
+                <button class="btn btn-outline" id="btnRefresh" onclick="fetchTrends()" disabled>새로고침</button>
+            </div>
+            <div class="search-options">
+                <label><input type="checkbox" id="autoExpand"> 자동 펼치기</label>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div class="loading-text">Google 트렌드를 가져오는 중...</div>
+        </div>
+
+        <!-- Info Bar -->
+        <div class="info-bar" id="infoBar">
+            <span id="infoText"></span>
+            <span id="infoTime"></span>
+        </div>
+
+        <!-- Trend List -->
+        <div id="trendList">
+            <div class="empty-state">
+                <div class="icon">&#127760;</div>
+                <p>지역을 선택하고 <strong>검색</strong> 버튼을 누르면<br>실시간 인기 검색어를 확인할 수 있습니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-box" id="toastBox"></div>
+
+    <script>
+        const PROXY = 'https://api.allorigins.win/raw?url=';
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('gt_region');
+            if (saved) document.getElementById('region').value = saved;
+        });
+
+        // Toast
+        function toast(msg, type = 'info') {
+            const box = document.getElementById('toastBox');
+            const el = document.createElement('div');
+            el.className = `toast toast-${type}`;
+            el.textContent = msg;
+            box.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }
+
+        // Fetch
+        async function fetchTrends() {
+            const region = document.getElementById('region').value;
+            localStorage.setItem('gt_region', region);
+
+            const btnFetch = document.getElementById('btnFetch');
+            const btnRefresh = document.getElementById('btnRefresh');
+            const loading = document.getElementById('loading');
+
+            btnFetch.disabled = true;
+            btnRefresh.disabled = true;
+            loading.classList.add('active');
+
+            try {
+                const rssUrl = `https://trends.google.com/trending/rss?geo=${region}`;
+                const res = await fetch(`${PROXY}${encodeURIComponent(rssUrl)}`);
+                if (!res.ok) throw new Error(`요청 실패 (${res.status})`);
+
+                const xml = await res.text();
+                const trends = parseRSS(xml);
+
+                if (trends.length === 0) {
+                    toast('트렌드 데이터가 없습니다. 다른 지역을 시도해보세요.', 'error');
+                    return;
+                }
+
+                renderTrends(trends);
+                toast(`${trends.length}개의 인기 검색어를 가져왔습니다.`, 'success');
+            } catch (err) {
+                toast(`오류: ${err.message}`, 'error');
+                console.error(err);
+            } finally {
+                btnFetch.disabled = false;
+                btnRefresh.disabled = false;
+                loading.classList.remove('active');
+            }
+        }
+
+        // Parse RSS
+        function parseRSS(xml) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(xml, 'text/xml');
+            const items = doc.querySelectorAll('item');
+            const list = [];
+
+            items.forEach(item => {
+                const title = item.querySelector('title')?.textContent || '';
+                const traffic = item.querySelector('ht\\:approx_traffic, approx_traffic')?.textContent || '';
+                const desc = item.querySelector('description')?.textContent || '';
+                const link = item.querySelector('link')?.textContent || '';
+                const pubDate = item.querySelector('pubDate')?.textContent || '';
+                const picture = item.querySelector('ht\\:picture, picture')?.textContent || '';
+
+                const newsItems = item.querySelectorAll('ht\\:news_item, news_item');
+                const articles = [];
+                newsItems.forEach(ni => {
+                    const nTitle = ni.querySelector('ht\\:news_item_title, news_item_title')?.textContent || '';
+                    const nUrl = ni.querySelector('ht\\:news_item_url, news_item_url')?.textContent || '';
+                    const nSource = ni.querySelector('ht\\:news_item_source, news_item_source')?.textContent || '';
+                    const nPicture = ni.querySelector('ht\\:news_item_picture, news_item_picture')?.textContent || '';
+                    if (nTitle) articles.push({ title: nTitle, url: nUrl, source: nSource, picture: nPicture });
+                });
+
+                list.push({ title, traffic, desc, link, pubDate, picture, articles });
+            });
+
+            return list;
+        }
+
+        // Render
+        function renderTrends(trends) {
+            const container = document.getElementById('trendList');
+            const infoBar = document.getElementById('infoBar');
+            const autoExpand = document.getElementById('autoExpand').checked;
+            const regionLabel = document.getElementById('region').selectedOptions[0].text;
+
+            infoBar.classList.add('active');
+            document.getElementById('infoText').textContent = `${regionLabel} 인기 검색어 ${trends.length}개`;
+            document.getElementById('infoTime').textContent = new Date().toLocaleString('ko-KR');
+
+            container.innerHTML = '<div class="trend-list">' + trends.map((t, i) => {
+                const rank = i + 1;
+                const dateStr = t.pubDate ? formatDate(t.pubDate) : '';
+                const openClass = autoExpand ? ' open' : '';
+
+                const articlesHTML = t.articles.map(a => {
+                    const imgHTML = a.picture
+                        ? `<img class="news-img" src="${a.picture}" alt="" loading="lazy" onerror="this.style.display='none'">`
+                        : '';
+                    return `<a href="${escapeHtml(a.url)}" target="_blank" rel="noopener" class="news-item">
+                        ${imgHTML}
+                        <div class="news-content">
+                            <div class="news-title">${escapeHtml(a.title)}</div>
+                            <div class="news-source">${escapeHtml(a.source)}</div>
+                        </div>
+                    </a>`;
+                }).join('');
+
+                return `
+                <div class="trend-card${openClass}">
+                    <div class="trend-header" onclick="this.parentElement.classList.toggle('open')">
+                        <div class="trend-rank${rank <= 3 ? ' top3' : ''}">${rank}</div>
+                        <div class="trend-body">
+                            <div class="trend-title">${escapeHtml(t.title)}</div>
+                            <div class="trend-meta">
+                                ${t.traffic ? `<span class="trend-traffic">${escapeHtml(t.traffic)}+ 검색</span>` : ''}
+                                ${dateStr ? `<span>${dateStr}</span>` : ''}
+                            </div>
+                        </div>
+                        <span class="arrow">&#9660;</span>
+                    </div>
+                    <div class="trend-detail">
+                        ${t.desc ? `<div class="trend-desc">${escapeHtml(t.desc)}</div>` : ''}
+                        ${articlesHTML ? `<div class="news-list">${articlesHTML}</div>` : ''}
+                        ${t.link ? `<a class="google-link" href="${escapeHtml(t.link)}" target="_blank" rel="noopener">Google에서 더 보기 &rarr;</a>` : ''}
+                    </div>
+                </div>`;
+            }).join('') + '</div>';
+        }
+
+        // Helpers
+        function escapeHtml(str) {
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
+        }
+
+        function formatDate(dateStr) {
+            try {
+                const d = new Date(dateStr);
+                const now = new Date();
+                const diff = now - d;
+                const mins = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+
+                if (mins < 60) return `${mins}분 전`;
+                if (hours < 24) return `${hours}시간 전`;
+                return d.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+            } catch {
+                return dateStr;
+            }
+        }
+    </script>
+</body>
+</html>
